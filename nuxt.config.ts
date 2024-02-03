@@ -8,5 +8,4 @@ export default defineNuxtConfig({
   runtimeConfig: {
     connectionString: "sqlite://localhost/qt",
   },
-  plugins: ["~/server/plugins/db.ts"],
 });

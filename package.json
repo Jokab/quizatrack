@@ -26,6 +26,7 @@
   "dependencies": {
     "@prisma/client": "5.9.1",
     "@types/node": "^20.11.16",
+    "dotenv": "^16.4.1",
     "prisma": "^5.9.1"
   }
 }

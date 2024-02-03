@@ -7,7 +7,7 @@ generator client {
 
 datasource db {
   provider = "sqlite"
-  url      = env("DATABASE_URL")
+  url      = "file:./qt.db"
 }
 
 model Venues {
@@ -19,4 +19,4 @@ model Venues {
 model Teams {
   id Int @id @default(autoincrement())
   name String
-}
+}  

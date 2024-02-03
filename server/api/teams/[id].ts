@@ -1,6 +1,9 @@
-import prisma from "~/plugins/db.ts";
+import { prisma } from "../../db";
 
-export default defineEventHandler((event) => {
+export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
-  return `${id} är toppen`;
+  console.log(id, Number(id));
+  const team = await prisma.teams.findFirst({ where: { id: Number(id) } });
+  console.log(team);
+  return `${team?.name} är toppen`;
 });
