@@ -1,6 +1,6 @@
 <script setup lang="ts">
 const { params } = useRoute();
-const msg = await useFetch(`/api/teams/${params.id}`);
+const msg = await useFetch(`/api/team/${params.id}`);
 </script>
 
 <template>

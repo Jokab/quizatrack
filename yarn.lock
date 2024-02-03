@@ -1464,7 +1464,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@prisma/client@npm:5.9.1":
+"@prisma/client@npm:^5.9.1":
   version: 5.9.1
   resolution: "@prisma/client@npm:5.9.1"
   peerDependencies:
@@ -5894,7 +5894,7 @@ __metadata:
   resolution: "nuxt-app@workspace:."
   dependencies:
     "@nuxt/eslint-config": "npm:^0.2.0"
-    "@prisma/client": "npm:5.9.1"
+    "@prisma/client": "npm:^5.9.1"
     "@types/eslint": "npm:^8"
     "@types/node": "npm:^20.11.16"
     dotenv: "npm:^16.4.1"

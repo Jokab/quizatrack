@@ -10,13 +10,84 @@ datasource db {
   url      = "file:./qt.db"
 }
 
-model Venues {
+model venue {
   id Int @id @default(autoincrement())
   name String
   location String
+  quizes quiz[]
 }
 
-model Teams {
+model quiz {
+  id Int @id @default(autoincrement())
+  date DateTime
+  venue venue @relation(fields: [venueId], references: [id])
+  venueId Int
+  host host @relation(fields: [hostId], references: [id])
+  hostId Int
+  questions question[]
+  competitors competitor[]
+}
+
+model host {
   id Int @id @default(autoincrement())
   name String
+  quizes quiz[]
+}
+
+model question {
+  id Int @id @default(autoincrement())
+  index Int
+  quiz quiz @relation(fields: [quizId], references: [id])
+  quizId Int
+  questionParts questionPart[]
+}
+
+model questionPart {
+  id Int @id @default(autoincrement())
+  text String
+  index Int?
+  question question @relation(fields: [questionId], references: [id])
+  questionId Int
+  answer String
+  competitorAnswers competitorAnswer[]
+}
+
+model competitorAnswer {
+  id Int @id @default(autoincrement())
+  text String
+  points Int
+  questionPart questionPart @relation(fields: [questionPartId], references: [id])
+  questionPartId Int
+  competitor competitor @relation(fields: [competitorId], references: [id])
+  competitorId Int
+}
+
+model competitor {
+  id Int @id @default(autoincrement())
+  team team @relation(fields: [teamId], references: [id])
+  teamId Int
+  quiz quiz @relation(fields: [quizId], references: [id])
+  quizId Int
+  teamMembers teamMember[]
+  competitorAnswer competitorAnswer[]
+}
+
+model teamMember {
+  @@id([competitorId, personId])
+  competitor competitor @relation(fields: [competitorId], references: [id])
+  competitorId Int
+  person person @relation(fields: [personId], references: [id])
+  personId Int
+}
+
+model person {
+  id Int @id @default(autoincrement())
+  name String
+  teamMembers teamMember[]
+}
+
+model team {
+  id Int @id @default(autoincrement())
+  name String
+  competitors competitor[]
 }  
