@@ -31,6 +31,7 @@
     "@pothos/plugin-prisma": "^3.63.1",
     "@prisma/client": "^5.9.1",
     "@types/node": "^20.11.16",
+    "chart.js": "^4.4.1",
     "dotenv": "^16.4.1",
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",

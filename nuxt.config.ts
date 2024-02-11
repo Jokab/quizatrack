@@ -1,15 +1,4 @@
-// https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
-  // app: {
-  //   head: {
-
-  //     style: [
-  //       // <style type="text/css">:root { color: red }</style>
-  //       { children: ':root { color: red }' }
-  //     ],
-  //   }
-
-  // },
   devtools: { enabled: true },
   typescript: {
     typeCheck: true,

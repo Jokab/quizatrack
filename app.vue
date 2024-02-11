@@ -1,13 +1,28 @@
 <script setup lang="ts">
 useHead({
   bodyAttrs: {
-    class: 'bg-gray-100 m-2'
+    class: 'm-2 md:container md:mx-auto'
   }
 })
+
+const router = useRouter();
+
+const items = ref([
+  {
+    label: "Home",
+    icon: "pi pi-home",
+    command: () => {
+      router.push("/")
+    }
+  }
+])
 </script>
 
 <template>
-  <NuxtPage />
+  <div class="flex-col">
+    <Menubar class="mb-2" :model="items" />
+    <NuxtPage class="" />
+  </div>
 </template>
 
 <style>
