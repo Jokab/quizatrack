@@ -1,3 +1,4 @@
+import type { Competitor } from "~/types";
 import { prisma } from "../../db";
 
 // interface Competitor {
@@ -10,11 +11,11 @@ import { prisma } from "../../db";
 //   competitorId: string;
 // }
 
-// interface Team {
-//   id: string;
-//   name: string;
-//   competitors: Competitor[]
-// }
+interface Team {
+  id: string;
+  name: string;
+  competitors: Competitor[];
+}
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
@@ -25,6 +26,7 @@ export default defineEventHandler(async (event) => {
       name: true,
       competitors: {
         select: {
+          id: true,
           teamMembers: {
             select: {
               person: {
@@ -42,6 +44,7 @@ export default defineEventHandler(async (event) => {
           },
           quiz: {
             select: {
+              id: true,
               date: true,
               host: {
                 select: {
@@ -69,6 +72,32 @@ export default defineEventHandler(async (event) => {
         }
       },
     }
+  });
+
+  const quizCompetitors = await prisma.competitor.findMany({
+    where: {
+      quizId: {
+        in: team?.competitors.map(x => x.quiz.id)
+      }
+    },
+    select: {
+      id: true,
+      competitorAnswer: {
+        select: {
+          text: true,
+          points: true
+        }
+      },
+    }
+  })
+
+  const result = team as unknown as Team;
+  result.competitors.forEach(comp => {
+    const sortedPoints = quizCompetitors.flatMap(x => ({
+      points: x.competitorAnswer.map(y => y.points).reduce((x, y) => x + y),
+      id: x.id
+    })).sort(x => x.points).reverse()
+    comp.placement = sortedPoints.map(y => y.id).indexOf(comp.id) + 1;
   });
   return team;
 });

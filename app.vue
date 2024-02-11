@@ -1,7 +1,7 @@
 <script setup lang="ts">
 useHead({
   bodyAttrs: {
-    class: 'm-2 md:container md:mx-auto'
+    class: 'bg-gray-100 m-2 md:container md:mx-auto'
   }
 })
 
@@ -9,19 +9,24 @@ const router = useRouter();
 
 const items = ref([
   {
-    label: "Home",
+    label: "Hem",
     icon: "pi pi-home",
     command: () => {
       router.push("/")
     }
   }
 ])
+const teamName = useState('teamName')
 </script>
 
 <template>
   <div class="flex-col">
-    <Menubar class="mb-2" :model="items" />
-    <NuxtPage class="" />
+    <Menubar class="mb-2" :model="items">
+      <template #end>
+        {{ teamName }}
+      </template>
+    </Menubar>
+    <NuxtPage />
   </div>
 </template>
 

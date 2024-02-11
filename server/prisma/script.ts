@@ -8,6 +8,11 @@ async function main() {
       name: "Skruvkarbinerna",
     },
   });
+  const team2 = await prisma.team.create({
+    data: {
+      name: "Bräckeskolan",
+    },
+  });
 
   const person1 = await prisma.person.create({ data: { name: "Jakob CG" } });
   const person2 = await prisma.person.create({ data: { name: "Linnea N" } });
@@ -40,6 +45,21 @@ async function main() {
     data: {
       quizId: venues.quizes[0].id,
       teamId: team.id,
+      teamMembers: {
+        create: [
+          { person: { connect: { id: person1.id } } },
+          { person: { connect: { id: person2.id } } },
+          { person: { connect: { id: person3.id } } },
+          { person: { connect: { id: person4.id } } },
+        ],
+      },
+    },
+  });
+
+  const competitors2 = await prisma.competitor.create({
+    data: {
+      quizId: venues.quizes[0].id,
+      teamId: team2.id,
       teamMembers: {
         create: [
           { person: { connect: { id: person1.id } } },
@@ -97,7 +117,24 @@ async function main() {
     },
   });
 
-  console.group(team, venues);
+  await prisma.competitorAnswer.create({
+    data: {
+      competitorId: competitors2.id,
+      questionPartId: question1.id,
+      points: 2,
+      text: "Ruddalen",
+    },
+  });
+  await prisma.competitorAnswer.create({
+    data: {
+      competitorId: competitors2.id,
+      questionPartId: question2.id,
+      points: 1,
+      text: "Stockholm",
+    },
+  });
+
+  console.group(team2, venues);
 }
 
 main()

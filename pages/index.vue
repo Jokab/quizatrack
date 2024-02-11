@@ -4,16 +4,19 @@ const teams = await useFetch("/api/teams", { method: "GET" });
 
 <template>
   <div>
-    <h1>Lag</h1>
-    <ul>
-      <li
-        v-for="team in teams.data.value"
-        :key="team.id"
-      >
-        <NuxtLink :to="`/teams/${team.id}`">
-          Skruvkarbinerna
-        </NuxtLink>
-      </li>
-    </ul>
+    <Card>
+      <template #title>
+        Alla lag
+      </template>
+      <template #content>
+        <ul>
+          <li v-for="team in teams.data.value" :key="team.id">
+            <NuxtLink :to="`/teams/${team.id}`">
+              {{ team.name }}
+            </NuxtLink>
+          </li>
+        </ul>
+      </template>
+    </Card>
   </div>
 </template>

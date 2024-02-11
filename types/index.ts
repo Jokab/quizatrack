@@ -32,10 +32,12 @@ export type QuestionPart = {
     question: Question;
 }
 export type Competitor = {
+    id: number;
     team: Team;
     quiz: Quiz;
-    teamMembers: TeamMember[]
-    competitorAnswers: CompetitorAnswer[]
+    teamMembers: TeamMember[];
+    competitorAnswer: CompetitorAnswer[];
+    placement: number;
 }
 export type CompetitorAnswer = {
     text: string;
