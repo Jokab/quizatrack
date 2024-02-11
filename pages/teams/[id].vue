@@ -1,10 +1,20 @@
 <!-- eslint-disable no-unused-labels -->
 <script setup lang="ts">
-import type { Team } from "@/types"
+import type { Quiz, Team } from "@/types"
 import { useFetch, useRoute } from "nuxt/app";
 import { computed } from "vue";
+import DataTable, { type DataTableRowSelectEvent } from 'primevue/datatable';
+import Column from 'primevue/column';
 
-const teamNameState = useState('teamName')
+interface PastQuizesRow {
+  id: number;
+  date: string;
+  points: string;
+  placement: number;
+}
+const router = useRouter();
+
+const teamNameState = useState('header')
 const { params } = useRoute();
 const data = await useFetch(`/api/teams/${params.id}`);
 teamNameState.value = data.data.value?.name;
@@ -18,22 +28,29 @@ const members = computed(() => {
 const questions = team.competitors[0].quiz.questions;
 // const answers = team.competitors[0].competitorAnswer;
 
-const pastQuizes = team.competitors.map(x => ({
-  date: new Date(x.quiz.date).toLocaleDateString("sv-SE"),
-  points: x.competitorAnswer.map(x => x.points).reduce((prev, pts) => prev + pts),
-  placement: x.placement
-}));
-// console.log(pastQuizes);
-console.log(team.competitors);
+const pastQuizes = team.competitors.map(x => {
+  const receivedPoints = x.competitorAnswer.map(x => x.points).reduce((prev, pts) => prev + pts);
+  const maxPoints = x.quiz.questions.flatMap(x => x.questionParts.map(y => y.points)).reduce((x, y) => x + y);
+  return {
+    id: x.quiz.id,
+    date: new Date(x.quiz.date).toLocaleDateString("sv-SE"),
+    points: `${receivedPoints}/${maxPoints}`,
+    placement: x.placement
+  }
+});
 
-// const questions = computed(() => {
+const selectedQuiz = ref<number>()
 
-// })
-// console.log(team.competitors[0].quiz.date.getDate())
-
-import DataTable from 'primevue/datatable';
-import Column from 'primevue/column';
-
+function onRowSelect(event: DataTableRowSelectEvent) {
+  // const matchingQuiz = team.competitors.map(x => x.quiz).find(x => x.id === event.data.id);
+  // if (!matchingQuiz) {
+  //   console.error("not found")
+  //   return;
+  // }
+  // const quiz = useState<Quiz>("quiz");
+  // quiz.value = matchingQuiz;
+  router.push(`/quiz/${event.data.id}`)
+}
 </script>
 
 <template>
@@ -51,10 +68,16 @@ import Column from 'primevue/column';
         Tidigare quizar
       </template>
       <template #content>
-        <DataTable :value="pastQuizes">
+        <DataTable v-model:selection="selectedQuiz" striped-rows selection-mode="single" :value="pastQuizes"
+          @row-select="onRowSelect">
           <Column field="date" header="Datum" />
           <Column field="points" header="Poäng" />
-          <Column field="placement" header="Placering" />
+          <Column field="placement" header="Plats" />
+          <Column field="action">
+            <template #body>
+              <i class="pi pi-chevron-right" />
+            </template>
+          </Column>
         </DataTable>
       </template>
     </Card>

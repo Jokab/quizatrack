@@ -11,7 +11,6 @@ export default defineNuxtConfig({
     'nuxt-primevue'
   ],
   primevue: {
-    unstyled: true
   },
   css: ['primevue/resources/themes/aura-light-blue/theme.css', 'primeicons/primeicons.css', '~/assets/css/main.css'],
   postcss: {

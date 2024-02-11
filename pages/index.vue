@@ -1,5 +1,8 @@
 <script setup lang="ts">
 const teams = await useFetch("/api/teams", { method: "GET" });
+
+const header = useState("header")
+header.value = undefined;
 </script>
 
 <template>

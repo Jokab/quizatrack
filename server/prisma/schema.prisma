@@ -1,12 +1,6 @@
 // This is your Prisma schema file,
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
-generator pothos {
-  provider = "prisma-pothos-types"
-  clientOutput = "@prisma/client"
-  output = "./pothos-types.ts"
-}
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -55,6 +49,7 @@ model questionPart {
   question question @relation(fields: [questionId], references: [id])
   questionId Int
   answer String
+  points Int
   competitorAnswers competitorAnswer[]
 }
 
@@ -76,6 +71,7 @@ model competitor {
   quizId Int
   teamMembers teamMember[]
   competitorAnswer competitorAnswer[]
+  placement Int
 }
 
 model teamMember {

@@ -1,21 +1,4 @@
-import type { Competitor } from "~/types";
 import { prisma } from "../../db";
-
-// interface Competitor {
-//   quizId: number;
-
-// }
-
-// interface TeamMember {
-//   name: string;
-//   competitorId: string;
-// }
-
-interface Team {
-  id: string;
-  name: string;
-  competitors: Competitor[];
-}
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
@@ -27,6 +10,7 @@ export default defineEventHandler(async (event) => {
       competitors: {
         select: {
           id: true,
+          placement: true,
           teamMembers: {
             select: {
               person: {
@@ -60,8 +44,10 @@ export default defineEventHandler(async (event) => {
                 select: {
                   questionParts: {
                     select: {
+                      id: true,
                       text: true,
-                      answer: true
+                      answer: true,
+                      points: true
                     }
                   },
                   index: true
@@ -74,30 +60,34 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  const quizCompetitors = await prisma.competitor.findMany({
-    where: {
-      quizId: {
-        in: team?.competitors.map(x => x.quiz.id)
-      }
-    },
-    select: {
-      id: true,
-      competitorAnswer: {
-        select: {
-          text: true,
-          points: true
-        }
-      },
-    }
-  })
+  // const totalPoints = team?.competitors.forEach(x => {
+  //   x.quiz = aa
+  // });
 
-  const result = team as unknown as Team;
-  result.competitors.forEach(comp => {
-    const sortedPoints = quizCompetitors.flatMap(x => ({
-      points: x.competitorAnswer.map(y => y.points).reduce((x, y) => x + y),
-      id: x.id
-    })).sort(x => x.points).reverse()
-    comp.placement = sortedPoints.map(y => y.id).indexOf(comp.id) + 1;
-  });
+  // const quizCompetitors = await prisma.competitor.findMany({
+  //   where: {
+  //     quizId: {
+  //       in: team?.competitors.map(x => x.quiz.id)
+  //     }
+  //   },
+  //   select: {
+  //     id: true,
+  //     competitorAnswer: {
+  //       select: {
+  //         text: true,
+  //         points: true
+  //       }
+  //     },
+  //   }
+  // })
+
+  // const result = team as unknown as Team;
+  // result.competitors.forEach(comp => {
+  //   const sortedPoints = quizCompetitors.flatMap(x => ({
+  //     points: x.competitorAnswer.map(y => y.points).reduce((x, y) => x + y),
+  //     id: x.id
+  //   })).sort(x => x.points).reverse()
+  //   comp.placement = sortedPoints.map(y => y.id).indexOf(comp.id) + 1;
+  // });
   return team;
 });

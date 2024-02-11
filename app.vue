@@ -16,7 +16,8 @@ const items = ref([
     }
   }
 ])
-const teamName = useState('teamName')
+const teamName = useState('header')
+
 </script>
 
 <template>

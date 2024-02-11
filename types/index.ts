@@ -12,6 +12,7 @@ export type Venue = {
 }
 
 export type Quiz = {
+    id: number;
     date: Date;
     host: Host[];
     venue: Venue;
@@ -26,9 +27,11 @@ export type Question = {
     questionParts: QuestionPart[];
 }
 export type QuestionPart = {
+    id: string;
     text: string;
     index: number;
     answer: string;
+    points: number;
     question: Question;
 }
 export type Competitor = {

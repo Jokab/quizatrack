@@ -4,12 +4,12 @@ const { data } = await useFetch(`/api/quiz`);
 
 <template>
   <div>
-    <ul>
+    <!-- <ul>
       <li v-for="quiz in data" :key="quiz.id">
         <NuxtLink :to="`/quiz/1`">
           {{ quiz.date }}
         </NuxtLink>
       </li>
-    </ul>
+    </ul> -->
   </div>
 </template>
