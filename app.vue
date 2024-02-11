@@ -1,7 +1,17 @@
 <script setup lang="ts">
-// const { data } = await useFetch("/api/data");
+useHead({
+  bodyAttrs: {
+    class: 'bg-gray-100 m-2'
+  }
+})
 </script>
 
 <template>
-  <NuxtPage>hej</NuxtPage>
+  <NuxtPage />
 </template>
+
+<style>
+.grey-background {
+  background-color: #fafafa;
+}
+</style>

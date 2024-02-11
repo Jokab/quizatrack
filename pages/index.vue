@@ -1,8 +1,19 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+const teams = await useFetch("/api/teams", { method: "GET" });
+</script>
 
 <template>
   <div>
     <h1>Lag</h1>
-    <NuxtLink to="/teams/0"> Skruvkarbinerna </NuxtLink>
+    <ul>
+      <li
+        v-for="team in teams.data.value"
+        :key="team.id"
+      >
+        <NuxtLink :to="`/teams/${team.id}`">
+          Skruvkarbinerna
+        </NuxtLink>
+      </li>
+    </ul>
   </div>
 </template>

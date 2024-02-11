@@ -16,7 +16,7 @@ async function main() {
 
   const venues = await prisma.venue.create({
     data: {
-      name: "Skruvkarbinerna",
+      name: "Bamba",
       location: "Repslagaregatan 7, Göteborg",
       quizes: {
         create: [
