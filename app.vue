@@ -13,7 +13,16 @@ const items = ref([
     icon: "pi pi-home",
     command: () => {
       router.push("/")
-    }
+    },
+
+  },
+  {
+    label: "Ny quiz",
+    icon: "pi pi-plus",
+    command: () => {
+      router.push("/quiz/new")
+    },
+
   }
 ])
 const teamName = useState('header')
