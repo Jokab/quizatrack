@@ -9,7 +9,7 @@ import Column from 'primevue/column';
 interface PastQuizesRow {
   id: number;
   date: string;
-  points: string;
+  points: number;
   placement: number;
 }
 const router = useRouter();
@@ -17,20 +17,19 @@ const router = useRouter();
 const teamNameState = useState('header')
 const { params } = useRoute();
 const data = await useFetch(`/api/teams/${params.id}`);
+console.log(data.data)
 teamNameState.value = data.data.value?.name;
 const team = JSON.parse(JSON.stringify(data.data.value)) as Team;
-
 const members = computed(() => {
   const teamMembers = team.competitors[0].teamMembers;
   return teamMembers.map(x => x.person.name);
 })
 
-const questions = team.competitors[0].quiz.questions;
-// const answers = team.competitors[0].competitorAnswer;
-
 const pastQuizes = team.competitors.map(x => {
-  const receivedPoints = x.competitorAnswer.map(x => x.points).reduce((prev, pts) => prev + pts);
-  const maxPoints = x.quiz.questions.flatMap(x => x.questionParts.map(y => y.points)).reduce((x, y) => x + y);
+  // console.log(x.competitorAnswer)
+  const receivedPoints = x.competitorAnswer.map(x => x.points).reduce((acc, pts) => acc + pts);
+  const maxPoints = x.quiz.questions.flatMap(x => x.questionParts.map(y => y.points)).reduce((acc, y) => acc + y);
+  // console.log(typeof (x.competitorAnswer.map(x => x.points)[0]))
   return {
     id: x.quiz.id,
     date: new Date(x.quiz.date).toLocaleDateString("sv-SE"),
@@ -42,13 +41,6 @@ const pastQuizes = team.competitors.map(x => {
 const selectedQuiz = ref<number>()
 
 function onRowSelect(event: DataTableRowSelectEvent) {
-  // const matchingQuiz = team.competitors.map(x => x.quiz).find(x => x.id === event.data.id);
-  // if (!matchingQuiz) {
-  //   console.error("not found")
-  //   return;
-  // }
-  // const quiz = useState<Quiz>("quiz");
-  // quiz.value = matchingQuiz;
   router.push(`/quiz/${event.data.id}`)
 }
 </script>

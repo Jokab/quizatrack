@@ -1,4 +1,38 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "../../db";
+
+import keys from 'lodash/keys';
+import cloneDeep from "lodash/cloneDeep";
+import isArray from "lodash/isArray";
+import isObject from 'lodash/isObject';
+import type { Team } from "~/types";
+
+type SwapDecimalWithNumber<T> = {
+  [k in keyof T]: T[k] extends Prisma.DecimalJsLike ? number : T[k] extends object ? SwapDecimalWithNumber<T[k]> : T[k]
+}
+
+// https://github.com/prisma/prisma/issues/6049#issuecomment-1649881107
+export const decimalsToNumber = <T extends object>(obj: T): SwapDecimalWithNumber<T> => {
+  obj = cloneDeep(obj)
+
+  keys(obj).forEach((key) => {
+    // @ts-ignore
+    if (Prisma.Decimal.isDecimal(obj[key])) {
+      // @ts-ignore
+      obj[key] = obj[key].toNumber()
+      // @ts-ignore
+    } else if (isArray(obj[key])) {
+      // @ts-ignore
+      obj[key] = obj[key].map((el) => (isObject(el) ? decimalsToNumber(el) : el))
+      // @ts-ignore
+    } else if (isObject(obj[key])) {
+      // @ts-ignore
+      obj[key] = decimalsToNumber(obj[key])
+    }
+  })
+  // @ts-ignore
+  return obj
+}
 
 export default defineEventHandler(async (event) => {
   const id = getRouterParam(event, "id");
@@ -60,34 +94,5 @@ export default defineEventHandler(async (event) => {
     }
   });
 
-  // const totalPoints = team?.competitors.forEach(x => {
-  //   x.quiz = aa
-  // });
-
-  // const quizCompetitors = await prisma.competitor.findMany({
-  //   where: {
-  //     quizId: {
-  //       in: team?.competitors.map(x => x.quiz.id)
-  //     }
-  //   },
-  //   select: {
-  //     id: true,
-  //     competitorAnswer: {
-  //       select: {
-  //         text: true,
-  //         points: true
-  //       }
-  //     },
-  //   }
-  // })
-
-  // const result = team as unknown as Team;
-  // result.competitors.forEach(comp => {
-  //   const sortedPoints = quizCompetitors.flatMap(x => ({
-  //     points: x.competitorAnswer.map(y => y.points).reduce((x, y) => x + y),
-  //     id: x.id
-  //   })).sort(x => x.points).reverse()
-  //   comp.placement = sortedPoints.map(y => y.id).indexOf(comp.id) + 1;
-  // });
-  return team;
+  return decimalsToNumber<Team>(team as unknown as Team);
 });

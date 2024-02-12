@@ -2114,6 +2114,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/lodash@npm:^4.14.202":
+  version: 4.14.202
+  resolution: "@types/lodash@npm:4.14.202"
+  checksum: 10c0/6064d43c8f454170841bd67c8266cc9069d9e570a72ca63f06bceb484cb4a3ee60c9c1f305c1b9e3a87826049fd41124b8ef265c4dd08b00f6766609c7fe9973
+  languageName: node
+  linkType: hard
+
 "@types/node@npm:*":
   version: 20.11.16
   resolution: "@types/node@npm:20.11.16"
@@ -6449,6 +6456,7 @@ __metadata:
     "@pothos/plugin-prisma": "npm:^3.63.1"
     "@prisma/client": "npm:^5.9.1"
     "@types/eslint": "npm:^8.56.2"
+    "@types/lodash": "npm:^4.14.202"
     "@types/node": "npm:^20.11.17"
     autoprefixer: "npm:^10.4.17"
     chart.js: "npm:^4.4.1"
@@ -6457,6 +6465,7 @@ __metadata:
     graphql: "npm:^16.8.1"
     graphql-request: "npm:^6.1.0"
     graphql-yoga: "npm:^5.1.1"
+    lodash: "npm:^4.17.21"
     nuxt: "npm:^3.10.1"
     nuxt-primevue: "npm:^0.3.0"
     postcss: "npm:^8.4.35"

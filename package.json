@@ -14,6 +14,7 @@
   "devDependencies": {
     "@nuxt/eslint-config": "^0.2.0",
     "@types/eslint": "^8.56.2",
+    "@types/lodash": "^4.14.202",
     "autoprefixer": "^10.4.17",
     "eslint": "^8.56.0",
     "nuxt": "^3.10.1",
@@ -36,6 +37,7 @@
     "graphql": "^16.8.1",
     "graphql-request": "^6.1.0",
     "graphql-yoga": "^5.1.1",
+    "lodash": "^4.17.21",
     "primeicons": "^6.0.1",
     "primevue": "^3.48.1",
     "prisma": "^5.9.1",

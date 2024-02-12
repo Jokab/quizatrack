@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import { Prisma, PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
@@ -80,12 +80,20 @@ const questions = [
     answer: "Tom Ahland",
   },
   {
-    text: "Vad heter Markus Lantz projekt?",
-    answer: "Munin",
-  },
-  {
-    text: "Vad heter laboratoriet Lantz jobbar i?",
-    answer: "Columbus",
+    questionParts: [
+      {
+        text: "Vad heter Markus Lantz projekt?",
+        answer: "Munin",
+        index: 0,
+        points: 0.5
+      },
+      {
+        text: "Vad heter laboratoriet Lantz jobbar i?",
+        answer: "Columbus",
+        index: 1,
+        points: 0.5
+      }
+    ]
   },
   {
     text: "Vad heter huvudstaden i Uruguay?",
@@ -96,28 +104,52 @@ const questions = [
     answer: "Frankrike",
   },
   {
-    text: "Vilket killnamn var vanligast i Sverige 2023?",
-    answer: "Hugo",
+    questionParts: [
+      {
+        text: "Vilket killnamn var vanligast i Sverige 2023?",
+        answer: "Hugo",
+        index: 0,
+        points: 0.5
+      },
+      {
+        text: "Vilket tjejnamn var vanligast i Sverige 2023?",
+        answer: "Elsa",
+        index: 1,
+        points: 0.5
+      }
+    ]
   },
   {
-    text: "Vilket tjejnamn var vanligast i Sverige 2023?",
-    answer: "Elsa",
+    questionParts: [
+      {
+        text: "Vilket land kommer Luis Figo från?",
+        answer: "Portugal",
+        index: 0,
+        points: 0.5
+      },
+      {
+        text: "Vilket bilmärke har modellen Sedan?",
+        answer: "Ford",
+        index: 1,
+        points: 0.5
+      }
+    ]
   },
   {
-    text: "Vilket land kommer Luis Figo från?",
-    answer: "Portugal",
-  },
-  {
-    text: "Vilket bilmärke har modellen Sedan?",
-    answer: "Ford",
-  },
-  {
-    text: "Vilket programmeringsspråk är lika svårt att läsa som att skriva, jättesvårt?",
-    answer: "Brainfuck",
-  },
-  {
-    text: "Vilket är det giftigaste programmeringsspråket?",
-    answer: "Python",
+    questionParts: [
+      {
+        text: "Vilket programmeringsspråk är lika svårt att läsa som att skriva, jättesvårt?",
+        answer: "Brainfuck",
+        index: 0,
+        points: 0.5
+      },
+      {
+        text: "Vilket är det giftigaste programmeringsspråket?",
+        answer: "Python",
+        index: 1,
+        points: 0.5
+      }
+    ]
   },
   {
     text: "Vilken sorts möbel är Stockholm hos IKEA?",
@@ -181,13 +213,16 @@ async function main() {
         index: index,
         quiz: { connect: { id: venues.quizes[0].id } },
         questionParts: {
-          create: [
-            {
-              text: question.text,
-              answer: question.answer,
-              points: 1
-            },
-          ],
+          create: question.questionParts ? question.questionParts.map(x =>
+          ({
+            text: x.text,
+            answer: x.answer,
+            points: new Prisma.Decimal(x.points)
+          })) : [{
+            text: question.text,
+            answer: question.answer,
+            points: new Prisma.Decimal(1)
+          }],
         },
       },
       include: {
@@ -198,7 +233,7 @@ async function main() {
       data: {
         competitorId: competitors.id,
         questionPartId: q.id,
-        points: 1,
+        points: new Prisma.Decimal(1),
         text: q.questionParts[0].answer,
       },
     });

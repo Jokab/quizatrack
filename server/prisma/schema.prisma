@@ -49,14 +49,14 @@ model questionPart {
   question question @relation(fields: [questionId], references: [id])
   questionId Int
   answer String
-  points Int
+  points Decimal
   competitorAnswers competitorAnswer[]
 }
 
 model competitorAnswer {
   id Int @id @default(autoincrement())
   text String
-  points Int
+  points Decimal
   questionPart questionPart @relation(fields: [questionPartId], references: [id])
   questionPartId Int
   competitor competitor @relation(fields: [competitorId], references: [id])
