@@ -85,15 +85,15 @@ const questions = [
         text: "Vad heter Markus Lantz projekt?",
         answer: "Munin",
         index: 0,
-        points: 0.5
+        points: 0.5,
       },
       {
         text: "Vad heter laboratoriet Lantz jobbar i?",
         answer: "Columbus",
         index: 1,
-        points: 0.5
-      }
-    ]
+        points: 0.5,
+      },
+    ],
   },
   {
     text: "Vad heter huvudstaden i Uruguay?",
@@ -109,15 +109,15 @@ const questions = [
         text: "Vilket killnamn var vanligast i Sverige 2023?",
         answer: "Hugo",
         index: 0,
-        points: 0.5
+        points: 0.5,
       },
       {
         text: "Vilket tjejnamn var vanligast i Sverige 2023?",
         answer: "Elsa",
         index: 1,
-        points: 0.5
-      }
-    ]
+        points: 0.5,
+      },
+    ],
   },
   {
     questionParts: [
@@ -125,15 +125,15 @@ const questions = [
         text: "Vilket land kommer Luis Figo från?",
         answer: "Portugal",
         index: 0,
-        points: 0.5
+        points: 0.5,
       },
       {
         text: "Vilket bilmärke har modellen Sedan?",
         answer: "Ford",
         index: 1,
-        points: 0.5
-      }
-    ]
+        points: 0.5,
+      },
+    ],
   },
   {
     questionParts: [
@@ -141,21 +141,21 @@ const questions = [
         text: "Vilket programmeringsspråk är lika svårt att läsa som att skriva, jättesvårt?",
         answer: "Brainfuck",
         index: 0,
-        points: 0.5
+        points: 0.5,
       },
       {
         text: "Vilket är det giftigaste programmeringsspråket?",
         answer: "Python",
         index: 1,
-        points: 0.5
-      }
-    ]
+        points: 0.5,
+      },
+    ],
   },
   {
     text: "Vilken sorts möbel är Stockholm hos IKEA?",
     answer: "Säng",
   },
-]
+];
 
 async function main() {
   const team = await prisma.team.create({
@@ -203,31 +203,33 @@ async function main() {
           { person: { connect: { id: person4.id } } },
         ],
       },
-      placement: 2
+      placement: 2,
     },
   });
 
   for (const [index, question] of questions.entries()) {
     const q = await prisma.question.create({
       data: {
-        index: index,
+        index,
         quiz: { connect: { id: venues.quizes[0].id } },
         questionParts: {
-          create: question.questionParts ? question.questionParts.map(x =>
-          ({
-            text: x.text,
-            answer: x.answer,
-            points: new Prisma.Decimal(x.points)
-          })) : [{
-            text: question.text,
-            answer: question.answer,
-            points: new Prisma.Decimal(1)
-          }],
+          create: question.questionParts
+            ? question.questionParts.map(x =>
+              ({
+                text: x.text,
+                answer: x.answer,
+                points: new Prisma.Decimal(x.points),
+              }))
+            : [{
+                text: question.text,
+                answer: question.answer,
+                points: new Prisma.Decimal(1),
+              }],
         },
       },
       include: {
-        questionParts: true
-      }
+        questionParts: true,
+      },
     });
     await prisma.competitorAnswer.create({
       data: {
@@ -250,5 +252,6 @@ main()
 
     await prisma.$disconnect();
 
+    // eslint-disable-next-line node/prefer-global/process
     process.exit(1);
   });

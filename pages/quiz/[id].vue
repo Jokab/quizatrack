@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import type { Quiz } from '~/types';
+import type { Quiz } from "~/types";
 
 const { params } = useRoute();
-const data = await useFetch(`/api/quiz/${params.id}`)
+const data = await useFetch(`/api/quiz/${params.id}`);
 const quiz = JSON.parse(JSON.stringify(data.data.value)) as Quiz;
 
-const header = useState("header")
-header.value = new Date(quiz.date).toLocaleDateString("sv-SE")
+const header = useState("header");
+header.value = new Date(quiz.date).toLocaleDateString("sv-SE");
 
 const questions = quiz.questions.map(x => ({
   id: x.id,
-  questionParts: x.questionParts
+  questionParts: x.questionParts,
 }));
 </script>
 
