@@ -25,15 +25,22 @@ export interface Host {
 
 export interface Question {
   id: number;
+  index: number;
   questionParts: QuestionPart[];
 };
 export interface QuestionPart {
-  id: string;
+  id: number;
   text: string;
   index: number;
   answer: string;
   points: number;
-  question: Question;
+  // question: Question;
+};
+export interface CreateQuestionPart {
+  text: string;
+  index: number;
+  answer: string;
+  points: number;
 };
 export interface Competitor {
   id: number;
