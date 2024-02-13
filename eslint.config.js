@@ -10,6 +10,11 @@ export default antfu(
       quotes: "double", // or 'double'
       semi: true,
     },
+    typescript: {
+      overrides: {
+        "no-console": ["off"],
+      },
+    },
   },
   // nuxt
 );

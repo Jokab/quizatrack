@@ -38,7 +38,7 @@ const questions = quiz.questions.map(x => ({
       </template>
       <template #content>
         <div v-for="(q, index) in questions" :key="q.id">
-          <template v-if="q.questionParts.length == 1">
+          <template v-if="q.questionParts.length === 1">
             <div class="flex justify-between">
               <div>{{ q.questionParts[0].text }}</div>
               <div class="text-slate-400 text-sm">

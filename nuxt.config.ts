@@ -8,11 +8,11 @@ export default defineNuxtConfig({
     connectionString: "sqlite://localhost/qt",
   },
   modules: [
-    'nuxt-primevue'
+    "nuxt-primevue",
   ],
   primevue: {
   },
-  css: ['primevue/resources/themes/aura-light-blue/theme.css', 'primeicons/primeicons.css', '~/assets/css/main.css'],
+  css: ["primevue/resources/themes/aura-light-blue/theme.css", "primeicons/primeicons.css", "~/assets/css/main.css"],
   postcss: {
     plugins: {
       tailwindcss: {},

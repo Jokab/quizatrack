@@ -16,23 +16,23 @@ export function decimalsToNumber<T extends object>(obj: T): SwapDecimalWithNumbe
   obj = cloneDeep(obj);
 
   keys(obj).forEach((key) => {
-    // @ts-expect-error
+    // @ts-expect-error abc
     if (Prisma.Decimal.isDecimal(obj[key])) {
-      // @ts-expect-error
+      // @ts-expect-error abc
       obj[key] = obj[key].toNumber();
-      // @ts-expect-error
     }
+    // @ts-expect-error abc
     else if (isArray(obj[key])) {
-      // @ts-expect-error
+      // @ts-expect-error abc
       obj[key] = obj[key].map(el => (isObject(el) ? decimalsToNumber(el) : el));
-      // @ts-expect-error
     }
+    // @ts-expect-error abc
     else if (isObject(obj[key])) {
-      // @ts-expect-error
+      // @ts-expect-error abc
       obj[key] = decimalsToNumber(obj[key]);
     }
   });
-  // @ts-expect-error
+  // @ts-expect-error abc
   return obj;
 }
 

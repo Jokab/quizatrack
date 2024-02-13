@@ -1,9 +1,9 @@
 <script setup lang="ts">
 useHead({
   bodyAttrs: {
-    class: 'bg-gray-100 m-2 md:container md:mx-auto'
-  }
-})
+    class: "bg-gray-100 m-2 md:container md:mx-auto",
+  },
+});
 
 const router = useRouter();
 
@@ -12,7 +12,7 @@ const items = ref([
     label: "Hem",
     icon: "pi pi-home",
     command: () => {
-      router.push("/")
+      router.push("/");
     },
 
   },
@@ -20,13 +20,12 @@ const items = ref([
     label: "Ny quiz",
     icon: "pi pi-plus",
     command: () => {
-      router.push("/quiz/new")
+      router.push("/quiz/new");
     },
 
-  }
-])
-const teamName = useState('header')
-
+  },
+]);
+const teamName = useState("header");
 </script>
 
 <template>

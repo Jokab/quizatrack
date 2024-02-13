@@ -6,11 +6,11 @@ export default defineEventHandler(async (event) => {
     include: {
       questions: {
         include: {
-          questionParts: {}
-        }
+          questionParts: {},
+        },
       },
       venue: true,
-      host: true
+      host: true,
     },
     where: { id: Number(id) },
   });
