@@ -3,7 +3,7 @@ import type { Quiz } from "~/types";
 
 export default defineEventHandler(async (event: any) => {
   const body = await readBody<Quiz>(event);
-  const q = {
+  const quiz = await prisma.quiz.create({
     data: {
       date: body.date,
       venue: {
@@ -25,13 +25,50 @@ export default defineEventHandler(async (event: any) => {
               text: qp.text,
               answer: qp.answer,
               points: 1,
-              index: 1,
+              index: q.index,
             })),
           },
         })),
       },
     },
+    include: {
+      questions: {
+        include: {
+          questionParts: true,
+        },
+      },
+    },
+  });
+
+  for (const c of body.competitors) {
+    await prisma.competitor.create({
+      data: {
+        placement: 1, // TODO
+        quiz: {
+          connect: {
+            id: quiz.id,
+          },
+        },
+        team: {
+          connect: {
+            // TODO: hard coded
+            id: 1,
+          },
+        },
+        competitorAnswers: {
+          create: c.competitorAnswers.map((a, i) => ({
+            text: a.text,
+            points: a.points,
+            questionPart: {
+              connect: {
+                id: quiz.questions.flatMap(q => q.questionParts).find(qp => qp.index === i)!.id,
+              },
+            },
+          })),
+        },
+      },
+    });
   };
-  const quiz = await prisma.quiz.create(q);
+
   return quiz;
 });

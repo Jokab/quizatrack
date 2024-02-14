@@ -70,7 +70,7 @@ model competitor {
   quiz quiz @relation(fields: [quizId], references: [id])
   quizId Int
   teamMembers teamMember[]
-  competitorAnswer competitorAnswer[]
+  competitorAnswers competitorAnswer[]
   placement Int
 }
 

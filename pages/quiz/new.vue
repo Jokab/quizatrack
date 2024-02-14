@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { CreateQuestionPart, Question, QuestionPart } from "~/types";
+import type { CreateCompetitorAnswer, CreateQuestionPart, Question, QuestionPart, Quiz } from "~/types";
 
 const date = ref<string>();
 const location = ref<string>();
@@ -21,25 +21,36 @@ function addQuestion(): void {
   });
 }
 
+const competitorAnswers = ref<CreateCompetitorAnswer[]>([]);
+
 function onTypeQ(e: string | undefined, index: number): void {
   questions.value[index].text = e as string;
 }
 function onTypeA(e: string | undefined, index: number): void {
   questions.value[index].answer = e as string;
 }
+function onTypeCompA(e: string | undefined, index: number): void {
+  console.log(competitorAnswers.value[index]);
+  if (!competitorAnswers.value[index]) {
+    competitorAnswers.value[index] = {
+      text: e as string,
+      points: 1,
+    };
+  }
+  // competitorAnswers.value[index].text = e as string;
+}
 async function save(): Promise<void> {
   const quest = questions.value.map((q, index) => ({
-
     questionParts: [({
       text: q.text,
       answer: q.answer,
       points: 1,
       index,
     }) as QuestionPart],
-    index: 1,
+    index,
   }) as Question);
 
-  await $fetch("/api/quiz", {
+  await $fetch<Quiz>("/api/quiz", {
     method: "POST",
     body: {
       date: new Date(),
@@ -51,6 +62,16 @@ async function save(): Promise<void> {
         name: host.value,
       },
       questions: quest,
+      competitors: [{
+        team: {
+          id: 0,
+          name: "Skruvkarbinerna",
+        },
+        competitorAnswers: competitorAnswers.value.map(x => ({
+          text: x.text,
+          points: x.points,
+        })),
+      }],
     },
   });
 }
@@ -64,7 +85,7 @@ async function save(): Promise<void> {
       </template>
       <template #content>
         <div class="flex flex-col gap-8">
-          <div class="grid grid-cols-2 gap-8 w-full mt-4">
+          <div class="grid grid-cols-3 gap-8 w-full mt-4">
             <div class="flex flex-col w-1/2">
               <label for="date">Datum</label>
               <Calendar id="date" v-model="date" date-format="yy-mm-dd" />
@@ -77,15 +98,18 @@ async function save(): Promise<void> {
               <label for="host">Host</label>
               <InputText id="host" v-model="host" />
             </div>
-            <div />
             <template v-for="(q, index) in questions" :key="index">
               <div class="flex flex-col">
-                <label for="question1">Fråga {{ index + 1 }}</label>
+                <label for="question1" class="font-bold">Fråga {{ index + 1 }}</label>
                 <InputText id="question1" :value="questions[index].text" @update:model-value="(e: string | undefined) => onTypeQ(e, index)" />
               </div>
               <div class="flex flex-col">
-                <label for="question1">Svar {{ index + 1 }}</label>
+                <label for="question1">Facit {{ index + 1 }}</label>
                 <InputText id="question1" :value="questions[index].answer" @update:model-value="(e: string | undefined) => onTypeA(e, index)" />
+              </div>
+              <div class="flex flex-col">
+                <label for="question1">Vårt svar {{ index + 1 }}</label>
+                <InputText id="question1" :value="competitorAnswers[index]?.text" @update:model-value="(e: string | undefined) => onTypeCompA(e, index)" />
               </div>
             </template>
           </div>

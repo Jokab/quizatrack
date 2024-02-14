@@ -17,6 +17,7 @@ export interface Quiz {
   host: Host;
   venue: Venue;
   questions: Question[];
+  competitors: Competitor[];
 };
 
 export interface Host {
@@ -47,7 +48,7 @@ export interface Competitor {
   team: Team;
   quiz: Quiz;
   teamMembers: TeamMember[];
-  competitorAnswer: CompetitorAnswer[];
+  competitorAnswers: CompetitorAnswer[];
   placement: number;
 };
 export interface CompetitorAnswer {
@@ -55,6 +56,10 @@ export interface CompetitorAnswer {
   points: number;
   question: QuestionPart;
   competitor: Competitor;
+};
+export interface CreateCompetitorAnswer {
+  text: string;
+  points: number;
 };
 export interface TeamMember {
   competitor: Competitor;

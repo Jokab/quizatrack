@@ -56,7 +56,7 @@ export default defineEventHandler(async (event) => {
               },
             },
           },
-          competitorAnswer: {
+          competitorAnswers: {
             select: {
               text: true,
               points: true,

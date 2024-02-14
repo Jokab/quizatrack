@@ -26,7 +26,7 @@ const team = JSON.parse(JSON.stringify(data.data.value)) as Team;
 
 const pastQuizes: PastQuizesRow[] = team.competitors.map((x) => {
   // console.log(x.competitorAnswer)
-  const receivedPoints = x.competitorAnswer.map(x => x.points).reduce((acc, pts) => acc + pts);
+  const receivedPoints = x.competitorAnswers.map(x => x.points).reduce((acc, pts) => acc + pts);
   const maxPoints = x.quiz.questions.flatMap(x => x.questionParts.map(y => y.points)).reduce((acc, y) => acc + y);
   // console.log(typeof (x.competitorAnswer.map(x => x.points)[0]))
   return {
