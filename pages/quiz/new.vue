@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { useNewQuizStore } from "~/store";
 import type { CreateCompetitorAnswer, CreateQuestionPart, Question, QuestionPart, Quiz } from "~/types";
 
+const store = useNewQuizStore();
 const date = ref<string>();
-const location = ref<string>();
-const host = ref<string>();
 
+// const location = ref<string>();
+const host = ref<string>();
 const questions = ref<CreateQuestionPart[]>([{
   text: "",
   answer: "",
@@ -20,6 +22,9 @@ function addQuestion(): void {
     index: 1,
   });
 }
+
+const saving = ref<boolean>();
+const errorSaving = ref<boolean>();
 
 const competitorAnswers = ref<CreateCompetitorAnswer[]>([]);
 
@@ -49,42 +54,63 @@ async function save(): Promise<void> {
     }) as QuestionPart],
     index,
   }) as Question);
-
-  await $fetch<Quiz>("/api/quiz", {
-    method: "POST",
-    body: {
-      date: new Date(),
-      venue: {
-        location: location.value,
+  saving.value = true;
+  errorSaving.value = false;
+  try {
+    await $fetch<Quiz>("/api/quiz", {
+      method: "POST",
+      body: {
+        date: new Date(),
+        venue: {
+          location: store.location,
         // name: body.venue.name,
-      },
-      host: {
-        name: host.value,
-      },
-      questions: quest,
-      competitors: [{
-        team: {
-          id: 0,
-          name: "Skruvkarbinerna",
         },
-        competitorAnswers: competitorAnswers.value.map(x => ({
-          text: x.text,
-          points: x.points,
-        })),
-      }],
-    },
-  });
+        host: {
+          name: host.value,
+        },
+        questions: quest,
+        competitors: [{
+          team: {
+            id: 0,
+            name: "Skruvkarbinerna",
+          },
+          competitorAnswers: competitorAnswers.value.map(x => ({
+            text: x.text,
+            points: x.points,
+          })),
+        }],
+      },
+    });
+  }
+  catch (error: any) {
+    errorSaving.value = true;
+    console.error("Failed to save");
+  }
+  finally {
+    saving.value = false;
+  }
 }
+// const storeLocation = computed<string | undefined>({
+//   get: () => {
+//     console.log(store.location, store.location);
+//     return store.location;
+//   },
+//   set: (val: Nullable<string>) => {
+//     store.location = val as string;
+//   },
+// });
+// console.log(store.location);
+// const { location } = storeToRefs(store);
 </script>
 
 <template>
   <div class="flex flex-col gap-y-2">
-    <Card>
+    <Card class="relative">
       <template #title>
         Ny quiz
       </template>
       <template #content>
-        <div class="flex flex-col gap-8">
+        <div class="flex flex-col gap-8 relative">
           <div class="grid grid-cols-3 gap-8 w-full mt-4">
             <div class="flex flex-col w-1/2">
               <label for="date">Datum</label>
@@ -92,7 +118,8 @@ async function save(): Promise<void> {
             </div>
             <div class="flex flex-col w-1/2">
               <label for="location">Plats</label>
-              <InputText id="location" v-model="location" />
+              <!-- <input v-model="store.location"> -->
+              <InputText id="location" v-model="store.location" />
             </div>
             <div class="flex flex-col w-1/2">
               <label for="host">Host</label>
@@ -113,12 +140,13 @@ async function save(): Promise<void> {
               </div>
             </template>
           </div>
-          <Button class="w-1/4" @click="addQuestion">
-            Ny fråga
-          </Button>
-          <Button class="w-1/4" @click="save">
-            Spara
-          </Button>
+          <Button label="Ny fråga" icon="pi pi-plus" rounded raised class="w-40" @click="addQuestion" />
+        </div>
+        <div class="flex flex-row gap-4 items-center text-red-600 absolute top-4 right-4">
+          <div v-if="errorSaving">
+            Misslyckades att spara :-(
+          </div>
+          <Button label="Spara" :loading="saving" icon="pi pi-save" rounded raised class="w-32" @click="save" />
         </div>
       </template>
     </Card>

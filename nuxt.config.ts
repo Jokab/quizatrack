@@ -9,8 +9,11 @@ export default defineNuxtConfig({
   },
   modules: [
     "nuxt-primevue",
+    "@pinia/nuxt",
+    "@pinia-plugin-persistedstate/nuxt",
   ],
-  primevue: {
+  piniaPersistedstate: {
+    storage: "localStorage",
   },
   css: ["primevue/resources/themes/aura-light-blue/theme.css", "primeicons/primeicons.css", "~/assets/css/main.css"],
   postcss: {
