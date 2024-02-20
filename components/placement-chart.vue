@@ -1,6 +1,9 @@
 <script setup lang=ts>
 import { onMounted, ref } from "vue";
 import Chart from "primevue/chart";
+import type { PastQuizesRow } from "~/types";
+
+const props = defineProps<{ quizes: PastQuizesRow[] }>();
 
 const chartData = ref();
 const chartOptions = ref();
@@ -12,20 +15,19 @@ onMounted(() => {
 
 function setChartData() {
   const documentStyle = getComputedStyle(document.documentElement);
-
   return {
-    labels: ["2024-01-12", "2024-02-01", "2024-02-08"],
+    labels: props.quizes.map(x => x.date),
     datasets: [
       {
         label: "Placering",
-        data: [5, 1, 6],
+        data: props.quizes.map(x => x.placement),
         fill: false,
         borderColor: documentStyle.getPropertyValue("--cyan-500"),
         tension: 0.4,
       },
       {
         label: "Poäng",
-        data: [19, 22, 19.5],
+        data: props.quizes.map(x => x.receivedPoints),
         fill: false,
         borderColor: documentStyle.getPropertyValue("--gray-500"),
         tension: 0.4,

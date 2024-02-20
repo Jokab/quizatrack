@@ -7,6 +7,7 @@ export interface NewQuizState {
   date: string | undefined;
   location: string | undefined;
   host: string | undefined;
+  placement: string | undefined;
 }
 
 // You can name the return value of `defineStore()` anything you want,
@@ -26,6 +27,7 @@ export const useNewQuizStore = defineStore("newQuiz", {
       date: undefined,
       location: undefined,
       host: undefined,
+      placement: undefined,
     };
   },
   actions: {

@@ -43,7 +43,7 @@ export default defineEventHandler(async (event: any) => {
   for (const c of body.competitors) {
     await prisma.competitor.create({
       data: {
-        placement: 1, // TODO
+        placement: c.placement,
         quiz: {
           connect: {
             id: quiz.id,
@@ -52,7 +52,7 @@ export default defineEventHandler(async (event: any) => {
         team: {
           connect: {
             // TODO: hard coded
-            id: 1,
+            id: 4,
           },
         },
         competitorAnswers: {

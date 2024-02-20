@@ -68,3 +68,11 @@ export interface TeamMember {
 export interface Person {
   name: string;
 }
+
+export interface PastQuizesRow {
+  id: number;
+  date: string;
+  maxPoints: number;
+  receivedPoints: number;
+  placement: number;
+}

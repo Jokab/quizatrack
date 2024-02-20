@@ -1,38 +1,26 @@
-<!-- eslint-disable no-unused-labels -->
 <script setup lang="ts">
 import { useFetch, useRoute } from "nuxt/app";
 import DataTable, { type DataTableRowSelectEvent } from "primevue/datatable";
 import Column from "primevue/column";
-import type { Team } from "@/types";
+import type { PastQuizesRow, Team } from "@/types";
 
-interface PastQuizesRow {
-  id: number;
-  date: string;
-  points: string;
-  placement: number;
-}
 const router = useRouter();
-
 const teamNameState = useState("header");
 const { params } = useRoute();
+
 const data = await useFetch(`/api/teams/${params.id}`);
-console.log(data.data);
 teamNameState.value = data.data.value?.name;
 const team = JSON.parse(JSON.stringify(data.data.value)) as Team;
-// const members = computed(() => {
-//   const teamMembers = team.competitors[0].teamMembers;
-//   return teamMembers.map(x => x.person.name);
-// });
 
 const pastQuizes: PastQuizesRow[] = team.competitors.map((x) => {
-  // console.log(x.competitorAnswer)
   const receivedPoints = x.competitorAnswers.map(x => x.points).reduce((acc, pts) => acc + pts);
   const maxPoints = x.quiz.questions.flatMap(x => x.questionParts.map(y => y.points)).reduce((acc, y) => acc + y);
-  // console.log(typeof (x.competitorAnswer.map(x => x.points)[0]))
   return {
     id: x.quiz.id,
+    venue: x.quiz.venue.name,
     date: new Date(x.quiz.date).toLocaleDateString("sv-SE"),
-    points: `${receivedPoints}/${maxPoints}`,
+    maxPoints,
+    receivedPoints,
     placement: x.placement,
   };
 });
@@ -51,7 +39,7 @@ function onRowSelect(event: DataTableRowSelectEvent) {
         Historik
       </template>
       <template #content>
-        <PlacementChart />
+        <PlacementChart :quizes="pastQuizes" />
       </template>
     </Card>
     <Card>
@@ -64,7 +52,12 @@ function onRowSelect(event: DataTableRowSelectEvent) {
           @row-select="onRowSelect"
         >
           <Column field="date" header="Datum" />
-          <Column field="points" header="Poäng" />
+          <Column field="venue" header="Plats" />
+          <Column field="points" header="Poäng">
+            <template #body="{ data: colData }">
+              {{ `${colData.receivedPoints}/${colData.maxPoints}` }}
+            </template>
+          </Column>
           <Column field="placement" header="Plats" />
           <Column field="action">
             <template #body>
@@ -76,25 +69,3 @@ function onRowSelect(event: DataTableRowSelectEvent) {
     </Card>
   </div>
 </template>
-
-<!-- <h3>
-  Quiz: {{ team.competitors[0].quiz.venue.name }} den {{ team.competitors[0].quiz.date }}
-</h3>
-<h3>
-  Medverkande
-</h3>
-<p>{{ members.join(", ") }}</p>
-<h3>
-  Frågor
-</h3>
-<div v-for="(q, index) in questions" :key="index">
-  <div v-for="(part, index2) in q.questionParts" :key="index2">
-    <p>{{ part.text }} {{ part.answer }}</p>
-  </div>
-</div>
-<div v-for="(q, index) in questions" :key="index">
-  <div v-for="(part, index2) in q.questionParts" :key="index2">
-    <p>{{ part.text }} {{ part.answer }}</p>
-  </div>
-</div>
-<br> -->

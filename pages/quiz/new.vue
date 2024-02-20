@@ -12,17 +12,14 @@ async function save(): Promise<void> {
     return;
 
   const myTimerPromise = new Promise((resolve, _) => {
-    setTimeout(resolve, 2000); // "resolve" is already a function, no need for another anonymous function here
+    setTimeout(resolve, 2000);
   });
 
   saving.value = true;
   errorSaving.value = false;
   try {
-    // Fetch data now, within Promise.all()
     Promise.all([myTimerPromise, postQuiz()]).then(() => {
-      // Hide the spinner now. AJAX requests are complete, and it has taken at least 2 seconds.
       saving.value = false;
-      console.log("Data fetched for sliders and posts");
     });
   }
   catch (error: any) {
@@ -44,7 +41,7 @@ function postQuiz(): Promise<any> {
   return $fetch<Quiz>("/api/quiz", {
     method: "POST",
     body: {
-      date: new Date(),
+      date: store.date,
       venue: {
         location: store.location,
       },
@@ -53,6 +50,7 @@ function postQuiz(): Promise<any> {
       },
       questions: quest,
       competitors: [{
+        placement: Number(store.placement),
         team: {
           id: 0,
           name: "Skruvkarbinerna",
@@ -88,6 +86,12 @@ function postQuiz(): Promise<any> {
               <label for="host">Host</label>
               <InputText id="host" v-model="store.host" />
             </div>
+            <div class="flex flex-col w-1/2">
+              <label for="host">Slutplacering</label>
+              <InputText id="host" v-model="store.placement" />
+            </div>
+            <div />
+            <div />
             <template v-for="(q, index) in store.questions" :key="index">
               <div class="flex flex-col">
                 <label for="question1" class="font-bold">Fråga {{ index + 1 }}</label>
