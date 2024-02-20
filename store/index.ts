@@ -1,10 +1,12 @@
 import { defineStore } from "pinia";
+import type { CreateCompetitorAnswer, CreateQuestionPart } from "~/types";
 
 export interface NewQuizState {
-  // date: string;
+  questions: CreateQuestionPart[];
+  competitorAnswers: CreateCompetitorAnswer[];
+  date: string | undefined;
   location: string | undefined;
-  // host: string;
-
+  host: string | undefined;
 }
 
 // You can name the return value of `defineStore()` anything you want,
@@ -14,15 +16,58 @@ export interface NewQuizState {
 export const useNewQuizStore = defineStore("newQuiz", {
   state: (): NewQuizState => {
     return {
+      questions: [{
+        text: "",
+        answer: "",
+        points: 1,
+        index: 1,
+      }],
+      competitorAnswers: [],
+      date: undefined,
       location: undefined,
+      host: undefined,
     };
   },
-  persist: true,
+  actions: {
+    addQuestion(): void {
+      if (!this.questions)
+        return;
+      this.questions.push({
+        text: "",
+        answer: "",
+        points: 1,
+        index: 1,
+      });
+    },
+    onTypeQ(e: string | undefined, index: number): void {
+      if (!this.questions)
+        return;
+      this.questions[index].text = e as string;
+    },
+    onTypeA(e: string | undefined, index: number): void {
+      if (!this.questions)
+        return;
+      this.questions[index].answer = e as string;
+    },
+    onTypeCompA(e: string | undefined, index: number): void {
+      if (!this.competitorAnswers[index]) {
+        this.competitorAnswers[index] = {
+          text: e as string,
+          points: 1,
+        };
+      }
+    },
+  },
+  persist: {
+    storage: persistedState.cookiesWithOptions({
+      sameSite: "lax",
+    }),
+  },
   // const date = ref<string>();
   // const location = ref<string>();
   // const host = ref<string>();
 
-  // const questions = ref<CreateQuestionPart[]>([{
+  // const this.questions = ref<CreateQuestionPart[]>([{
   //   text: "",
   //   answer: "",
   //   points: 1,

@@ -1,51 +1,37 @@
 <script setup lang="ts">
 import { useNewQuizStore } from "~/store";
-import type { CreateCompetitorAnswer, CreateQuestionPart, Question, QuestionPart, Quiz } from "~/types";
+import type { Question, QuestionPart, Quiz } from "~/types";
 
 const store = useNewQuizStore();
-const date = ref<string>();
-
-// const location = ref<string>();
-const host = ref<string>();
-const questions = ref<CreateQuestionPart[]>([{
-  text: "",
-  answer: "",
-  points: 1,
-  index: 1,
-}]);
-
-function addQuestion(): void {
-  questions.value.push({
-    text: "",
-    answer: "",
-    points: 1,
-    index: 1,
-  });
-}
 
 const saving = ref<boolean>();
 const errorSaving = ref<boolean>();
 
-const competitorAnswers = ref<CreateCompetitorAnswer[]>([]);
-
-function onTypeQ(e: string | undefined, index: number): void {
-  questions.value[index].text = e as string;
-}
-function onTypeA(e: string | undefined, index: number): void {
-  questions.value[index].answer = e as string;
-}
-function onTypeCompA(e: string | undefined, index: number): void {
-  console.log(competitorAnswers.value[index]);
-  if (!competitorAnswers.value[index]) {
-    competitorAnswers.value[index] = {
-      text: e as string,
-      points: 1,
-    };
-  }
-  // competitorAnswers.value[index].text = e as string;
-}
 async function save(): Promise<void> {
-  const quest = questions.value.map((q, index) => ({
+  if (!store.questions)
+    return;
+
+  const myTimerPromise = new Promise((resolve, _) => {
+    setTimeout(resolve, 2000); // "resolve" is already a function, no need for another anonymous function here
+  });
+
+  saving.value = true;
+  errorSaving.value = false;
+  try {
+    // Fetch data now, within Promise.all()
+    Promise.all([myTimerPromise, postQuiz()]).then(() => {
+      // Hide the spinner now. AJAX requests are complete, and it has taken at least 2 seconds.
+      saving.value = false;
+      console.log("Data fetched for sliders and posts");
+    });
+  }
+  catch (error: any) {
+    errorSaving.value = true;
+    console.error("Failed to save");
+  }
+}
+function postQuiz(): Promise<any> {
+  const quest = store.questions.map((q, index) => ({
     questionParts: [({
       text: q.text,
       answer: q.answer,
@@ -54,53 +40,31 @@ async function save(): Promise<void> {
     }) as QuestionPart],
     index,
   }) as Question);
-  saving.value = true;
-  errorSaving.value = false;
-  try {
-    await $fetch<Quiz>("/api/quiz", {
-      method: "POST",
-      body: {
-        date: new Date(),
-        venue: {
-          location: store.location,
-        // name: body.venue.name,
-        },
-        host: {
-          name: host.value,
-        },
-        questions: quest,
-        competitors: [{
-          team: {
-            id: 0,
-            name: "Skruvkarbinerna",
-          },
-          competitorAnswers: competitorAnswers.value.map(x => ({
-            text: x.text,
-            points: x.points,
-          })),
-        }],
+
+  return $fetch<Quiz>("/api/quiz", {
+    method: "POST",
+    body: {
+      date: new Date(),
+      venue: {
+        location: store.location,
       },
-    });
-  }
-  catch (error: any) {
-    errorSaving.value = true;
-    console.error("Failed to save");
-  }
-  finally {
-    saving.value = false;
-  }
+      host: {
+        name: store.host,
+      },
+      questions: quest,
+      competitors: [{
+        team: {
+          id: 0,
+          name: "Skruvkarbinerna",
+        },
+        competitorAnswers: store.competitorAnswers.map(x => ({
+          text: x.text,
+          points: x.points,
+        })),
+      }],
+    },
+  });
 }
-// const storeLocation = computed<string | undefined>({
-//   get: () => {
-//     console.log(store.location, store.location);
-//     return store.location;
-//   },
-//   set: (val: Nullable<string>) => {
-//     store.location = val as string;
-//   },
-// });
-// console.log(store.location);
-// const { location } = storeToRefs(store);
 </script>
 
 <template>
@@ -114,39 +78,39 @@ async function save(): Promise<void> {
           <div class="grid grid-cols-3 gap-8 w-full mt-4">
             <div class="flex flex-col w-1/2">
               <label for="date">Datum</label>
-              <Calendar id="date" v-model="date" date-format="yy-mm-dd" />
+              <Calendar id="date" v-model="store.date" date-format="yy-mm-dd" />
             </div>
             <div class="flex flex-col w-1/2">
               <label for="location">Plats</label>
-              <!-- <input v-model="store.location"> -->
               <InputText id="location" v-model="store.location" />
             </div>
             <div class="flex flex-col w-1/2">
               <label for="host">Host</label>
-              <InputText id="host" v-model="host" />
+              <InputText id="host" v-model="store.host" />
             </div>
-            <template v-for="(q, index) in questions" :key="index">
+            <template v-for="(q, index) in store.questions" :key="index">
               <div class="flex flex-col">
                 <label for="question1" class="font-bold">Fråga {{ index + 1 }}</label>
-                <InputText id="question1" :value="questions[index].text" @update:model-value="(e: string | undefined) => onTypeQ(e, index)" />
+                <InputText id="question1" :value="store.questions[index].text" @update:model-value="(e: string | undefined) => store.onTypeQ(e, index)" />
               </div>
               <div class="flex flex-col">
-                <label for="question1">Facit {{ index + 1 }}</label>
-                <InputText id="question1" :value="questions[index].answer" @update:model-value="(e: string | undefined) => onTypeA(e, index)" />
+                <label for="question2">Facit {{ index + 1 }}</label>
+                <InputText id="question2" :value="store.questions[index].answer" @update:model-value="(e: string | undefined) => store.onTypeA(e, index)" />
               </div>
               <div class="flex flex-col">
-                <label for="question1">Vårt svar {{ index + 1 }}</label>
-                <InputText id="question1" :value="competitorAnswers[index]?.text" @update:model-value="(e: string | undefined) => onTypeCompA(e, index)" />
+                <label for="question3">Vårt svar {{ index + 1 }}</label>
+                <InputText id="question3" :value="store.competitorAnswers[index]?.text" @update:model-value="(e: string | undefined) => store.onTypeCompA(e, index)" />
               </div>
             </template>
           </div>
-          <Button label="Ny fråga" icon="pi pi-plus" rounded raised class="w-40" @click="addQuestion" />
+          <Button label="Ny fråga" icon="pi pi-plus" rounded raised class="w-40" @click="store.addQuestion" />
         </div>
         <div class="flex flex-row gap-4 items-center text-red-600 absolute top-4 right-4">
           <div v-if="errorSaving">
             Misslyckades att spara :-(
           </div>
-          <Button label="Spara" :loading="saving" icon="pi pi-save" rounded raised class="w-32" @click="save" />
+          <Button label="Spara" :loading="saving" :disabled="saving" icon="pi pi-save" rounded raised class="w-32" @click="save" />
+          <Button severity="secondary" icon="pi pi-trash" rounded @click="store.$reset()" />
         </div>
       </template>
     </Card>
