@@ -4,6 +4,9 @@ export default defineNuxtConfig({
     typeCheck: true,
     strict: true,
   },
+  experimental: {
+    externalVue: false,
+  },
   runtimeConfig: {
     connectionString: "sqlite://localhost/qt",
   },
