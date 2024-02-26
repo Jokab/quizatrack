@@ -3,6 +3,7 @@ import type { Quiz } from "~/types";
 
 export default defineEventHandler(async (event: any) => {
   const body = await readBody<Quiz>(event);
+  console.log(body);
   const quiz = await prisma.quiz.create({
     data: {
       date: body.date,
@@ -40,6 +41,12 @@ export default defineEventHandler(async (event: any) => {
     },
   });
 
+  const team = await prisma.team.findFirst({
+    where: {
+      name: body.competitors[0].team.name,
+    },
+  });
+
   for (const c of body.competitors) {
     await prisma.competitor.create({
       data: {
@@ -51,8 +58,7 @@ export default defineEventHandler(async (event: any) => {
         },
         team: {
           connect: {
-            // TODO: hard coded
-            id: 4,
+            id: team!.id,
           },
         },
         competitorAnswers: {

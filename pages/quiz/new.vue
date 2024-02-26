@@ -52,7 +52,6 @@ function postQuiz(): Promise<any> {
       competitors: [{
         placement: Number(store.placement),
         team: {
-          id: 0,
           name: "Skruvkarbinerna",
         },
         competitorAnswers: store.competitorAnswers.map(x => ({

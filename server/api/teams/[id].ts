@@ -1,9 +1,7 @@
 import { Prisma } from "@prisma/client";
 
-import keys from "lodash/keys";
-import cloneDeep from "lodash/cloneDeep";
-import isArray from "lodash/isArray";
-import isObject from "lodash/isObject";
+import { cloneDeep, isArray, isObject, keys } from "lodash-es";
+
 import { prisma } from "../../db";
 import type { Team } from "~/types";
 
