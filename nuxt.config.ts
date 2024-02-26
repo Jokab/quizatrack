@@ -8,7 +8,7 @@ export default defineNuxtConfig({
     externalVue: false,
   },
   runtimeConfig: {
-    connectionString: "sqlite://localhost/qt",
+    connectionString: "postgresql://jakob:1234@localhost/qt",
   },
   modules: [
     "nuxt-primevue",

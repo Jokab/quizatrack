@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  url      = "file:./qt.db"
+  provider = "postgres"
+  url      = "postgresql://jakob:1234@localhost/qt"
 }
 
 model venue {

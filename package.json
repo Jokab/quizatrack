@@ -4,12 +4,12 @@
   "private": true,
   "packageManager": "yarn@4.1.0",
   "scripts": {
-    "build": "prisma generate --schema server/prisma/schema.prisma && nuxi build && run recreate-db",
+    "build": "prisma generate --schema server/prisma/schema.prisma && nuxi build && recreate-db",
     "recreate-db": "mkdir tmp && cp -r server/prisma/migrations server/prisma/schema.prisma server/prisma/script.ts tmp && cd tmp && yarn prisma migrate deploy && cp qt.db ../.output/server && cd .. && rm -rf tmp",
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare",
+    "postinstall": "nuxt prepare && prisma generate --schema server/prisma/schema.prisma",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
