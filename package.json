@@ -8,7 +8,7 @@
     "dev": "nuxt dev",
     "generate": "nuxt generate",
     "preview": "nuxt preview",
-    "postinstall": "nuxt prepare && prisma generate",
+    "vercel-build": "prisma generate && prisma migrate deploy && nuxi build",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
