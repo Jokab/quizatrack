@@ -4,7 +4,8 @@ generator client {
 
 datasource db {
   provider = "postgres"
-  url      = "postgresql://jakob:1234@localhost/qt"
+  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model venue {
