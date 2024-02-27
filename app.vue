@@ -36,6 +36,7 @@ const teamName = useState("header");
       </template>
     </Menubar>
     <NuxtPage />
+    <Toast />
   </div>
 </template>
 

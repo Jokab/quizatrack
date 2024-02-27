@@ -113,7 +113,7 @@ function postQuiz(): Promise<any> {
             Misslyckades att spara :-(
           </div>
           <Button label="Spara" :loading="saving" :disabled="saving" icon="pi pi-save" rounded raised class="w-32" @click="save" />
-          <Button severity="secondary" icon="pi pi-trash" rounded @click="store.$reset()" />
+          <TrashButton @click="store.$reset()" />
         </div>
       </template>
     </Card>

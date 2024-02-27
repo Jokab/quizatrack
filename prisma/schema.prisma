@@ -5,7 +5,7 @@ generator client {
 datasource db {
   provider = "postgres"
   url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  // directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
 
 model venue {
@@ -35,7 +35,7 @@ model host {
 model question {
   id Int @id @default(autoincrement())
   index Int
-  quiz quiz @relation(fields: [quizId], references: [id])
+  quiz quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
   quizId Int
   questionParts questionPart[]
 }
@@ -44,7 +44,7 @@ model questionPart {
   id Int @id @default(autoincrement())
   text String
   index Int?
-  question question @relation(fields: [questionId], references: [id])
+  question question @relation(fields: [questionId], references: [id], onDelete: Cascade)
   questionId Int
   answer String
   points Decimal
@@ -55,9 +55,9 @@ model competitorAnswer {
   id Int @id @default(autoincrement())
   text String
   points Decimal
-  questionPart questionPart @relation(fields: [questionPartId], references: [id])
+  questionPart questionPart @relation(fields: [questionPartId], references: [id], onDelete: Cascade)
   questionPartId Int
-  competitor competitor @relation(fields: [competitorId], references: [id])
+  competitor competitor @relation(fields: [competitorId], references: [id], onDelete: Cascade)
   competitorId Int
 }
 
@@ -65,7 +65,7 @@ model competitor {
   id Int @id @default(autoincrement())
   team team @relation(fields: [teamId], references: [id])
   teamId Int
-  quiz quiz @relation(fields: [quizId], references: [id])
+  quiz quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
   quizId Int
   teamMembers teamMember[]
   competitorAnswers competitorAnswer[]

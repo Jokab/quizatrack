@@ -6,17 +6,33 @@ const data = await useFetch(`/api/quiz/${params.id}`);
 const quiz = JSON.parse(JSON.stringify(data.data.value)) as Quiz;
 
 const header = useState("header");
+const router = useRouter();
+
 header.value = new Date(quiz.date).toLocaleDateString("sv-SE");
 
 const questions = quiz.questions.map(x => ({
   id: x.id,
   questionParts: x.questionParts,
 }));
+
+const errorDeleting = false;
+
+async function deleteQuiz() {
+  try {
+    await $fetch(`/api/quiz/${params.id}`, { method: "DELETE" });
+    const toast = usePVToastService();
+    toast.add({ severity: "success", summary: "Info", detail: "Quiz borttagen", life: 3000 });
+    router.go(-1);
+  }
+  catch (error: any) {
+    console.error(error);
+  }
+}
 </script>
 
 <template>
   <div class="flex flex-col gap-y-2">
-    <Card>
+    <Card class="relative">
       <template #title>
         Fakta
       </template>
@@ -26,6 +42,12 @@ const questions = quiz.questions.map(x => ({
         </div>
         <div>
           Quizmaster: {{ quiz.host.name }}
+        </div>
+        <div class="flex flex-row gap-4 items-center text-red-600 absolute top-4 right-4">
+          <div v-if="errorDeleting">
+            Misslyckades att spara :-(
+          </div>
+          <TrashButton @click="deleteQuiz" />
         </div>
       </template>
     </Card>
