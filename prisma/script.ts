@@ -1,161 +1,8 @@
+import fs from "node:fs";
 import { Prisma, PrismaClient } from "@prisma/client";
+import { parse } from "csv-parse/sync";
 
 const prisma = new PrismaClient();
-
-const questions = [
-  {
-    text: "Vem gör låten som spelas?",
-    answer: "Scooter",
-  },
-  {
-    text: "Var är Max hamburgare grundat?",
-    answer: "Gällivare",
-  },
-  {
-    text: "Nånting 2021",
-    answer: "2021",
-  },
-  {
-    text: "Vad heter gorillan i Mario-spelen?",
-    answer: "Donkey Kong",
-  },
-  {
-    text: "Invasiv art som finns i norra Sverige, från Asien?",
-    answer: "Mårdhund",
-  },
-  {
-    text: "Vilken frukt säljer Chiquita förutom Ananas?",
-    answer: "Banan",
-  },
-  {
-    text: "Vad säger Gandalf för att öppna porten till Moria?",
-    answer: "Mellon",
-  },
-  {
-    text: "Vad är Nya Zeelands nationalfågel?",
-    answer: "Kiwi",
-  },
-  {
-    text: "Vad heter Fool's Gardens låt?",
-    answer: "Lemon Tree",
-  },
-  {
-    text: "Vad heter SVT:s spel-app?",
-    answer: "Duo",
-  },
-  {
-    text: "Vad sökes på fråga 1-10?",
-    answer: "Hooja",
-  },
-  {
-    text: "Vem vann jerringpriset?",
-    answer: "Ebba Andersson",
-  },
-  {
-    text: "Vem gör de fyra låtarna i pausen?",
-    answer: "The Animals",
-  },
-  {
-    text: "Vad är anagramet 'bilda om ål'?",
-    answer: "Mobillåda",
-  },
-  {
-    text: "Varifrån kommer citatet 'There is something rotten in the state of Denmark'?",
-    answer: "Hamlet",
-  },
-  {
-    text: "Vad heter Bamses farmor?",
-    answer: "Augusta Beata",
-  },
-  {
-    text: "Var heter stället där farmor bor?",
-    answer: "Höga berget",
-  },
-  {
-    text: "Vad skämtade Ralf Edström att den albanske läkaren hette?",
-    answer: "Doktor Alban",
-  },
-  {
-    text: "Vilken dokumentärfilmare släppte nyss en dokumentär om sig själv?",
-    answer: "Tom Ahland",
-  },
-  {
-    questionParts: [
-      {
-        text: "Vad heter Markus Lantz projekt?",
-        answer: "Munin",
-        index: 0,
-        points: 0.5,
-      },
-      {
-        text: "Vad heter laboratoriet Lantz jobbar i?",
-        answer: "Columbus",
-        index: 1,
-        points: 0.5,
-      },
-    ],
-  },
-  {
-    text: "Vad heter huvudstaden i Uruguay?",
-    answer: "Montevideo",
-  },
-  {
-    text: "Vilket lag vann herrarnas handbolls-EM?",
-    answer: "Frankrike",
-  },
-  {
-    questionParts: [
-      {
-        text: "Vilket killnamn var vanligast i Sverige 2023?",
-        answer: "Hugo",
-        index: 0,
-        points: 0.5,
-      },
-      {
-        text: "Vilket tjejnamn var vanligast i Sverige 2023?",
-        answer: "Elsa",
-        index: 1,
-        points: 0.5,
-      },
-    ],
-  },
-  {
-    questionParts: [
-      {
-        text: "Vilket land kommer Luis Figo från?",
-        answer: "Portugal",
-        index: 0,
-        points: 0.5,
-      },
-      {
-        text: "Vilket bilmärke har modellen Sedan?",
-        answer: "Ford",
-        index: 1,
-        points: 0.5,
-      },
-    ],
-  },
-  {
-    questionParts: [
-      {
-        text: "Vilket programmeringsspråk är lika svårt att läsa som att skriva, jättesvårt?",
-        answer: "Brainfuck",
-        index: 0,
-        points: 0.5,
-      },
-      {
-        text: "Vilket är det giftigaste programmeringsspråket?",
-        answer: "Python",
-        index: 1,
-        points: 0.5,
-      },
-    ],
-  },
-  {
-    text: "Vilken sorts möbel är Stockholm hos IKEA?",
-    answer: "Säng",
-  },
-];
 
 async function main() {
   const team = await prisma.team.create({
@@ -207,6 +54,41 @@ async function main() {
     },
   });
 
+  const __dirname = new URL(".", import.meta.url).pathname;
+
+  const data = fs.readFileSync(`${__dirname}/questions.csv`, "utf8");
+  const records = parse(data, {
+    columns: true,
+  });
+  const questions = [];
+  for (const q of records) {
+    if (q.Text2 === "") {
+      questions.push({
+        text: q.Text1,
+        answer: q.Answer1,
+      });
+    }
+    else {
+      questions.push({
+        questionParts: [
+          {
+            text: q.Text1,
+            answer: q.Answer1,
+            index: 0,
+            points: 0.2,
+          },
+          {
+            text: q.Text2,
+            answer: q.Answer2,
+            index: 1,
+            points: 0.5,
+          },
+        ],
+      },
+      );
+    }
+  }
+  console.log(records);
   for (const [index, question] of questions.entries()) {
     const q = await prisma.question.create({
       data: {
