@@ -5,122 +5,140 @@ import { parse } from "csv-parse/sync";
 const prisma = new PrismaClient();
 
 async function main() {
+  await prisma.$executeRawUnsafe("TRUNCATE public.venue CASCADE;");
+  await prisma.$executeRawUnsafe("TRUNCATE public.quiz CASCADE;");
+  await prisma.$executeRawUnsafe("TRUNCATE public.host CASCADE;");
+  await prisma.$executeRawUnsafe("TRUNCATE public.team CASCADE;");
+  await prisma.$executeRawUnsafe("TRUNCATE public.person CASCADE;");
+  // Insert teams
   const team = await prisma.team.create({
     data: {
       name: "Skruvkarbinerna",
     },
   });
 
+  // Insert persons
   const person1 = await prisma.person.create({ data: { name: "Jakob CG" } });
   const person2 = await prisma.person.create({ data: { name: "Linnea N" } });
   const person3 = await prisma.person.create({ data: { name: "Ellen W" } });
   const person4 = await prisma.person.create({ data: { name: "Peter E" } });
 
-  const venues = await prisma.venue.create({
+  // Insert venue and host
+  const bambaVenue = await prisma.venue.create({
     data: {
       name: "Bamba",
       location: "Repslagaregatan 7, Göteborg",
-      quizes: {
-        create: [
-          {
-            date: new Date(),
-            host: {
-              create: {
-                name: "David",
-              },
-            },
-          },
-        ],
-      },
-    },
-    include: {
-      quizes: true,
     },
   });
 
-  const competitors = await prisma.competitor.create({
-    data: {
-      quizId: venues.quizes[0].id,
-      teamId: team.id,
-      teamMembers: {
-        create: [
-          { person: { connect: { id: person1.id } } },
-          { person: { connect: { id: person2.id } } },
-          { person: { connect: { id: person3.id } } },
-          { person: { connect: { id: person4.id } } },
-        ],
-      },
-      placement: 2,
-    },
-  });
-
+  // Read questions from CSV
+  const quizFileDates = ["2024-01-24", "2024-02-21"];
   const __dirname = new URL(".", import.meta.url).pathname;
+  for (const date of quizFileDates) {
+    // Insert quiz for date
+    const quiz = await prisma.quiz.create({
+      data: {
+        date: new Date(date),
+        venue: { connect: { id: bambaVenue.id } },
+        host: {
+          create: {
+            name: "David",
+          },
+        },
+      },
+    });
 
-  const data = fs.readFileSync(`${__dirname}/questions.csv`, "utf8");
+    // Insert competitors for quiz
+    const competitors = await prisma.competitor.create({
+      data: {
+        quizId: quiz.id,
+        teamId: team.id,
+        teamMembers: {
+          create: [
+            { person: { connect: { id: person1.id } } },
+            { person: { connect: { id: person2.id } } },
+            { person: { connect: { id: person3.id } } },
+            { person: { connect: { id: person4.id } } },
+          ],
+        },
+        placement: 1,
+      },
+    });
+    await insertQuizAndAnswersFromFile(`${__dirname}/${date}.csv`, competitors.id, quiz.id);
+  }
+}
+
+async function insertQuizAndAnswersFromFile(fileName: string, competitorId: number, quizId: number) {
+  const data = fs.readFileSync(fileName, "utf8");
   const records = parse(data, {
     columns: true,
   });
   const questions = [];
   for (const q of records) {
     if (q.Text2 === "") {
-      questions.push({
-        text: q.Text1,
-        answer: q.Answer1,
-      });
+      questions.push([
+        {
+          text: q.Text1,
+          answer: q.Answer1,
+          index: 0,
+          points: 1,
+          correct: q.Correct1,
+        },
+      ]);
     }
     else {
-      questions.push({
-        questionParts: [
+      questions.push(
+        [
           {
             text: q.Text1,
             answer: q.Answer1,
             index: 0,
-            points: 0.2,
+            points: 0.5,
+            correct: q.Correct1,
           },
           {
             text: q.Text2,
             answer: q.Answer2,
             index: 1,
             points: 0.5,
+            correct: q.Correct2,
           },
         ],
-      },
       );
     }
   }
-  console.log(records);
-  for (const [index, question] of questions.entries()) {
-    const q = await prisma.question.create({
+
+  // Insert questions and competitor answers
+  for (const [index, questionParts] of questions.entries()) {
+    const mappedParts = questionParts.map(x =>
+      ({
+        text: x.text,
+        answer: x.correct,
+        points: new Prisma.Decimal(x.points),
+      }));
+    const insertedQuestion = await prisma.question.create({
       data: {
         index,
-        quiz: { connect: { id: venues.quizes[0].id } },
+        quiz: { connect: { id: quizId } },
         questionParts: {
-          create: question.questionParts
-            ? question.questionParts.map(x =>
-              ({
-                text: x.text,
-                answer: x.answer,
-                points: new Prisma.Decimal(x.points),
-              }))
-            : [{
-                text: question.text,
-                answer: question.answer,
-                points: new Prisma.Decimal(1),
-              }],
+          create: mappedParts,
         },
       },
       include: {
         questionParts: true,
       },
     });
-    await prisma.competitorAnswer.create({
-      data: {
-        competitorId: competitors.id,
-        questionPartId: q.id,
-        points: new Prisma.Decimal(1),
-        text: q.questionParts[0].answer,
-      },
-    });
+
+    for (const [index, qp] of insertedQuestion.questionParts.entries()) {
+      await prisma.competitorAnswer.create({
+        data: {
+          competitorId,
+          questionPartId: qp.id,
+          points: questionParts[index].answer === qp.answer ? qp.points : 0,
+          text: questionParts[index].correct,
+        },
+      });
+    }
   }
 }
 
@@ -128,12 +146,9 @@ main()
   .then(async () => {
     await prisma.$disconnect();
   })
-
   .catch(async (e) => {
     console.error(e);
-
     await prisma.$disconnect();
-
     // eslint-disable-next-line node/prefer-global/process
     process.exit(1);
   });
