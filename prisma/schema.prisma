@@ -35,6 +35,7 @@ model host {
 model question {
   id Int @id @default(autoincrement())
   index Int
+  category String
   quiz quiz @relation(fields: [quizId], references: [id], onDelete: Cascade)
   quizId Int
   questionParts questionPart[]
@@ -91,3 +92,8 @@ model team {
   name String
   competitors competitor[]
 }  
+
+// model category {
+//   id Int @id @default(autoincrement())
+//   name String
+// }

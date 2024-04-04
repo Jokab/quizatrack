@@ -83,6 +83,7 @@ async function insertQuizAndAnswersFromFile(fileName: string, competitorId: numb
           index: 0,
           points: 1,
           correct: q.Correct1,
+          category: q.Category,
         },
       ]);
     }
@@ -95,6 +96,7 @@ async function insertQuizAndAnswersFromFile(fileName: string, competitorId: numb
             index: 0,
             points: 0.5,
             correct: q.Correct1,
+            category: q.Category,
           },
           {
             text: q.Text2,
@@ -102,6 +104,7 @@ async function insertQuizAndAnswersFromFile(fileName: string, competitorId: numb
             index: 1,
             points: 0.5,
             correct: q.Correct2,
+            category: q.Category,
           },
         ],
       );
@@ -119,6 +122,7 @@ async function insertQuizAndAnswersFromFile(fileName: string, competitorId: numb
     const insertedQuestion = await prisma.question.create({
       data: {
         index,
+        category: questionParts[0].category,
         quiz: { connect: { id: quizId } },
         questionParts: {
           create: mappedParts,

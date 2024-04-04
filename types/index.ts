@@ -27,6 +27,7 @@ export interface Host {
 export interface Question {
   id: number;
   index: number;
+  category: string;
   questionParts: QuestionPart[];
 };
 export interface QuestionPart {

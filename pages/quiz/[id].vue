@@ -12,10 +12,49 @@ header.value = new Date(quiz.date).toLocaleDateString("sv-SE");
 
 const questions = quiz.questions.map(x => ({
   id: x.id,
+  category: x.category,
   questionParts: x.questionParts,
 }));
 
 const errorDeleting = false;
+
+function mapCategory(categoryKey: string): string {
+  switch (categoryKey) {
+    case "music":
+      return "Musik";
+    case "science":
+      return "Vetenskap";
+    case "geography":
+      return "Geografi";
+    case "languages":
+      return "Språk";
+    case "movies":
+      return "Film";
+    case "sports":
+      return "Sport";
+    case "tech":
+      return "Teknik";
+    case "food":
+      return "Mat & dryck";
+    case "history":
+      return "Historia";
+    case "literature":
+      return "Litteratur";
+    case "society":
+      return "Samhälle";
+    case "tv":
+      return "TV";
+    case "logic":
+      return "Kluring";
+    case "nature":
+      return "Natur";
+    case "business":
+      return "Näringsliv";
+    case "design":
+      return "Design";
+  }
+  return "";
+}
 
 async function deleteQuiz() {
   try {
@@ -62,7 +101,7 @@ async function deleteQuiz() {
         <div v-for="(q, index) in questions" :key="q.id">
           <template v-if="q.questionParts.length === 1">
             <div class="flex justify-between">
-              <div>{{ q.questionParts[0].text }}</div>
+              <div>{{ q.questionParts[0].text }}&nbsp;&nbsp;<span class="text-slate-400 text-sm">{{ mapCategory(q.category) }}</span></div>
               <div class="text-slate-400 text-sm">
                 #{{ index + 1 }}
               </div>
@@ -78,7 +117,7 @@ async function deleteQuiz() {
           </template>
           <template v-for="(qp, index2) in q.questionParts" v-else :key="qp.id">
             <div class="flex justify-between">
-              <div>{{ qp.text }}</div>
+              <div>{{ qp.text }}&nbsp;&nbsp;<span class="text-slate-400 text-sm">{{ mapCategory(q.category) }}</span></div>
               <div class="text-slate-400 text-sm">
                 #{{ index + 1 }}{{ q.questionParts.length > 1 ? `${String.fromCharCode(97 + index2)}` : '' }}
               </div>
