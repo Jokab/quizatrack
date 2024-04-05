@@ -4,16 +4,19 @@ import type { CategoryPercentages } from "~/pages/teams/[id].vue";
 
 const props = defineProps<{ categoryPercentages: CategoryPercentages }>();
 const chartData = setChartData(); ;
-const chartOptions = ref();
+const chartOptions = {
+  maintainAspectRatio: true,
+
+};
 
 function setChartData() {
   const data = {
     label: "Dataset",
-    data: Object.values(props.categoryPercentages),
+    data: Object.entries(props.categoryPercentages).sort(([,a], [,b]) => Number(a) - Number(b)).map(([, value]) => value),
   };
 
   return {
-    labels: Object.keys(props.categoryPercentages),
+    labels: Object.entries(props.categoryPercentages).sort(([,a], [,b]) => Number(a) - Number(b)).map(([key, _]) => key),
     datasets: [data],
   };
 }

@@ -53,7 +53,7 @@ Object.keys(categoryStats).forEach((category) => {
   const percentage = (correctAnswers / totalQuestions) * 100;
   categoryPercentages[category] = percentage.toFixed(2);
 });
-console.log(categoryPercentages);
+categoryPercentages.value.sor;
 
 const selectedQuiz = ref<number>();
 

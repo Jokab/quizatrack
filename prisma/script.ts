@@ -32,7 +32,7 @@ async function main() {
   });
 
   // Read questions from CSV
-  const quizFileDates = ["2024-01-24", "2024-02-21"];
+  const quizFileDates = ["2024-01-24", "2024-02-21", "2024-03-06"];
   const __dirname = new URL(".", import.meta.url).pathname;
   for (const date of quizFileDates) {
     // Insert quiz for date
