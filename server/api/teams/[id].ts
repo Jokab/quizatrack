@@ -58,6 +58,7 @@ export default defineEventHandler(async (event) => {
             select: {
               text: true,
               points: true,
+              questionPart: true,
             },
           },
           quiz: {

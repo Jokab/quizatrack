@@ -118,11 +118,11 @@ async function insertQuizAndAnswersFromFile(fileName: string, competitorId: numb
         text: x.text,
         answer: x.correct,
         points: new Prisma.Decimal(x.points),
+        category: x.category,
       }));
     const insertedQuestion = await prisma.question.create({
       data: {
         index,
-        category: questionParts[0].category,
         quiz: { connect: { id: quizId } },
         questionParts: {
           create: mappedParts,

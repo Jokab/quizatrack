@@ -21,9 +21,9 @@ export default defineEventHandler(async (event: any) => {
       questions: {
         create: body.questions.map(q => ({
           index: q.index,
-          category: q.category,
           questionParts: {
             create: q.questionParts.map(qp => ({
+              category: qp.category,
               text: qp.text,
               answer: qp.answer,
               points: 1,

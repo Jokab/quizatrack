@@ -12,7 +12,6 @@ header.value = new Date(quiz.date).toLocaleDateString("sv-SE");
 
 const questions = quiz.questions.map(x => ({
   id: x.id,
-  category: x.category,
   questionParts: x.questionParts,
 }));
 
@@ -101,7 +100,7 @@ async function deleteQuiz() {
         <div v-for="(q, index) in questions" :key="q.id">
           <template v-if="q.questionParts.length === 1">
             <div class="flex justify-between">
-              <div>{{ q.questionParts[0].text }}&nbsp;&nbsp;<span class="text-slate-400 text-sm">{{ mapCategory(q.category) }}</span></div>
+              <div>{{ q.questionParts[0].text }}&nbsp;&nbsp;<span class="text-slate-400 text-sm">{{ mapCategory(q.questionParts[0].category) }}</span></div>
               <div class="text-slate-400 text-sm">
                 #{{ index + 1 }}
               </div>
@@ -117,7 +116,7 @@ async function deleteQuiz() {
           </template>
           <template v-for="(qp, index2) in q.questionParts" v-else :key="qp.id">
             <div class="flex justify-between">
-              <div>{{ qp.text }}&nbsp;&nbsp;<span class="text-slate-400 text-sm">{{ mapCategory(q.category) }}</span></div>
+              <div>{{ qp.text }}&nbsp;&nbsp;<span class="text-slate-400 text-sm">{{ mapCategory(qp.category) }}</span></div>
               <div class="text-slate-400 text-sm">
                 #{{ index + 1 }}{{ q.questionParts.length > 1 ? `${String.fromCharCode(97 + index2)}` : '' }}
               </div>

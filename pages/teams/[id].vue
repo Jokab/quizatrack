@@ -25,6 +25,36 @@ const pastQuizes: PastQuizesRow[] = team.competitors.map((x) => {
   };
 });
 
+export interface CategoryPercentages {
+  [key: string]: string;
+}
+
+const categoryStats: any = {};
+
+team.competitors.forEach((competitor) => {
+  competitor.competitorAnswers.forEach((answer) => {
+    const category = answer.questionPart.category;
+    if (!categoryStats[category]) {
+      categoryStats[category] = {
+        totalQuestions: 0,
+        correctAnswers: 0,
+      };
+    }
+    categoryStats[category].totalQuestions++;
+    if (answer.points === answer.questionPart.points)
+      categoryStats[category].correctAnswers++;
+  });
+});
+
+const categoryPercentages: CategoryPercentages = {};
+
+Object.keys(categoryStats).forEach((category) => {
+  const { totalQuestions, correctAnswers } = categoryStats[category];
+  const percentage = (correctAnswers / totalQuestions) * 100;
+  categoryPercentages[category] = percentage.toFixed(2);
+});
+console.log(categoryPercentages);
+
 const selectedQuiz = ref<number>();
 
 function onRowSelect(event: DataTableRowSelectEvent) {
@@ -40,6 +70,14 @@ function onRowSelect(event: DataTableRowSelectEvent) {
       </template>
       <template #content>
         <PlacementChart :quizes="pastQuizes" />
+      </template>
+    </Card>
+    <Card>
+      <template #title>
+        Kategorier
+      </template>
+      <template #content>
+        <CategoryChart :category-percentages="categoryPercentages" />
       </template>
     </Card>
     <Card>

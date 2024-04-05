@@ -27,7 +27,6 @@ export interface Host {
 export interface Question {
   id: number;
   index: number;
-  category: string;
   questionParts: QuestionPart[];
 };
 export interface QuestionPart {
@@ -36,7 +35,7 @@ export interface QuestionPart {
   index: number;
   answer: string;
   points: number;
-  // question: Question;
+  category: string;
 };
 export interface CreateQuestionPart {
   text: string;
@@ -55,7 +54,7 @@ export interface Competitor {
 export interface CompetitorAnswer {
   text: string;
   points: number;
-  question: QuestionPart;
+  questionPart: QuestionPart;
   competitor: Competitor;
 };
 export interface CreateCompetitorAnswer {
