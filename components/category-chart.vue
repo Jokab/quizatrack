@@ -1,27 +1,32 @@
 <script setup lang="ts">
 import Chart from "primevue/chart";
-import type { CategoryPercentages } from "~/pages/teams/[id].vue";
+import type { ChartOptions } from "chart.js";
+import type { CategoryStats } from "~/pages/teams/[id].vue";
 
-const props = defineProps<{ categoryPercentages: CategoryPercentages }>();
+const props = defineProps<{ categoryStats: CategoryStats }>();
 const chartData = setChartData(); ;
-const chartOptions = {
-  maintainAspectRatio: true,
-
+const chartOptions: ChartOptions = {
+  maintainAspectRatio: false,
+  indexAxis: "y",
 };
 
 function setChartData() {
-  const data = {
-    label: "Dataset",
-    data: Object.entries(props.categoryPercentages).sort(([,a], [,b]) => Number(a) - Number(b)).map(([, value]) => value),
+  const statsOrderByPercentage = Object.fromEntries(Object.entries(props.categoryStats).sort(([,a], [,b]) => Number(a.correctPercentage) - Number(b.correctPercentage)));
+  const percentStats = {
+    label: "Procent rätt",
+    data: Object.values(statsOrderByPercentage).map(x => x.correctPercentage),
   };
-
+  const amountStats = {
+    label: "Antal frågor",
+    data: Object.values(statsOrderByPercentage).map(x => x.correctAbsoluteAmount),
+  };
   return {
-    labels: Object.entries(props.categoryPercentages).sort(([,a], [,b]) => Number(a) - Number(b)).map(([key, _]) => key),
-    datasets: [data],
+    labels: Object.keys(statsOrderByPercentage).map(x => mapCategory(x)),
+    datasets: [percentStats, amountStats],
   };
 }
 </script>
 
 <template>
-  <Chart type="bar" :data="chartData" :options="chartOptions" />
+  <Chart type="bar" :data="chartData" :options="chartOptions" :height="500" />
 </template>

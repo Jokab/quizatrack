@@ -25,35 +25,39 @@ const pastQuizes: PastQuizesRow[] = team.competitors.map((x) => {
   };
 });
 
-export interface CategoryPercentages {
-  [key: string]: string;
+export interface CategoryStatRecord {
+  correctPercentage: string;
+  correctAbsoluteAmount: string;
 }
 
-const categoryStats: any = {};
+export interface CategoryStats {
+  [key: string]: CategoryStatRecord;
+}
+
+const categoryStats1: any = {};
 
 team.competitors.forEach((competitor) => {
   competitor.competitorAnswers.forEach((answer) => {
     const category = answer.questionPart.category;
-    if (!categoryStats[category]) {
-      categoryStats[category] = {
+    if (!categoryStats1[category]) {
+      categoryStats1[category] = {
         totalQuestions: 0,
         correctAnswers: 0,
       };
     }
-    categoryStats[category].totalQuestions++;
+    categoryStats1[category].totalQuestions++;
     if (answer.points === answer.questionPart.points)
-      categoryStats[category].correctAnswers++;
+      categoryStats1[category].correctAnswers++;
   });
 });
 
-const categoryPercentages: CategoryPercentages = {};
+const categoryStats: CategoryStats = {};
 
-Object.keys(categoryStats).forEach((category) => {
-  const { totalQuestions, correctAnswers } = categoryStats[category];
+Object.keys(categoryStats1).forEach((category) => {
+  const { totalQuestions, correctAnswers } = categoryStats1[category];
   const percentage = (correctAnswers / totalQuestions) * 100;
-  categoryPercentages[category] = percentage.toFixed(2);
+  categoryStats[category] = { correctPercentage: percentage.toFixed(2), correctAbsoluteAmount: correctAnswers };
 });
-categoryPercentages.value.sor;
 
 const selectedQuiz = ref<number>();
 
@@ -77,7 +81,7 @@ function onRowSelect(event: DataTableRowSelectEvent) {
         Kategorier
       </template>
       <template #content>
-        <CategoryChart :category-percentages="categoryPercentages" />
+        <CategoryChart :category-stats="categoryStats" />
       </template>
     </Card>
     <Card>
@@ -96,7 +100,7 @@ function onRowSelect(event: DataTableRowSelectEvent) {
               {{ `${colData.receivedPoints}/${colData.maxPoints}` }}
             </template>
           </Column>
-          <Column field="placement" header="Plats" />
+          <Column field="placement" header="Placering" />
           <Column field="action">
             <template #body>
               <i class="pi pi-chevron-right" />

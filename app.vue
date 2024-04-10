@@ -25,6 +25,7 @@ const items = ref([
 
   },
 ]);
+// TODO: Causes hydration mismatch for some reason
 const teamName = useState("header");
 </script>
 
