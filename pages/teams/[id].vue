@@ -23,7 +23,7 @@ const pastQuizes: PastQuizesRow[] = team.competitors.map((x) => {
     receivedPoints,
     placement: x.placement,
   };
-});
+}).sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 
 export interface CategoryStatRecord {
   correctPercentage: string;
