@@ -75,7 +75,7 @@ function postQuiz(): Promise<any> {
           <div class="grid grid-cols-3 gap-8 w-full mt-4">
             <div class="flex flex-col w-1/2">
               <label for="date">Datum</label>
-              <Calendar id="date" v-model="store.date" date-format="yy-mm-dd" />
+              <Calendar id="date" v-model="store.date as ((Date | Date[] | (Date | null)[]) & (string | string[] | Date | Date[])) | null | undefined" date-format="yy-mm-dd" />
             </div>
             <div class="flex flex-col w-1/2">
               <label for="location">Plats</label>
