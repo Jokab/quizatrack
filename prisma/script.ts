@@ -1,10 +1,11 @@
 import fs from "node:fs";
+import path from "node:path";
 import { Prisma, PrismaClient } from "@prisma/client";
 import { parse } from "csv-parse/sync";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export async function main() {
   await prisma.$executeRawUnsafe("TRUNCATE public.venue CASCADE;");
   await prisma.$executeRawUnsafe("TRUNCATE public.quiz CASCADE;");
   await prisma.$executeRawUnsafe("TRUNCATE public.host CASCADE;");
@@ -33,7 +34,7 @@ async function main() {
 
   // Read questions from CSV
   const quizFileDates = ["2024-01-24", "2024-02-21", "2024-03-06"];
-  const __dirname = new URL(".", import.meta.url).pathname;
+  const __dirname = path.resolve("prisma/");
   for (const date of quizFileDates) {
     // Insert quiz for date
     const quiz = await prisma.quiz.create({
@@ -69,6 +70,7 @@ async function main() {
 }
 
 async function insertQuizAndAnswersFromFile(fileName: string, competitorId: number, quizId: number) {
+  console.log(fileName);
   const data = fs.readFileSync(fileName, "utf8");
   const records = parse(data, {
     columns: true,
@@ -145,14 +147,3 @@ async function insertQuizAndAnswersFromFile(fileName: string, competitorId: numb
     }
   }
 }
-
-main()
-  .then(async () => {
-    await prisma.$disconnect();
-  })
-  .catch(async (e) => {
-    console.error(e);
-    await prisma.$disconnect();
-    // eslint-disable-next-line node/prefer-global/process
-    process.exit(1);
-  });
